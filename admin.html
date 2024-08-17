@@ -5,39 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <script type="module" src="admin.js" defer></script>
 </head>
 <body>
     <header>
         <h1>Admin Dashboard</h1>
-        <nav>
-            <button id="sign-out">Sign Out</button>
-        </nav>
+        <button id="sign-out">Sign Out</button>
     </header>
     <main>
         <section id="create-exam">
-            <h2>Create New Exam</h2>
-            <input type="text" id="exam-title" placeholder="Exam Title">
+            <h2>Create Exam</h2>
+            <input type="text" id="exam-title" placeholder="Exam Title" />
             <textarea id="exam-description" placeholder="Exam Description"></textarea>
             <button id="create-exam-button">Create Exam</button>
         </section>
-        <section id="exam-list">
+        <section id="manage-exams">
             <h2>Manage Exams</h2>
-            <div id="exams"></div>
+            <div id="exam-list"></div>
         </section>
         <section id="manage-questions" style="display: none;">
             <h2>Manage Questions</h2>
-            <input type="text" id="question-text" placeholder="Question Text">
-            <input type="text" id="option-1" placeholder="Option 1">
-            <input type="text" id="option-2" placeholder="Option 2">
-            <input type="text" id="option-3" placeholder="Option 3">
-            <input type="text" id="option-4" placeholder="Option 4">
-            <input type="number" id="correct-option" placeholder="Correct Option (0-3)">
-            <button id="add-question">Add Question</button>
+            <input type="text" id="question-text" placeholder="Question Text" />
+            <input type="text" id="option1" placeholder="Option 1" />
+            <input type="text" id="option2" placeholder="Option 2" />
+            <input type="text" id="option3" placeholder="Option 3" />
+            <input type="text" id="option4" placeholder="Option 4" />
+            <select id="correct-option">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+                <option value="option4">Option 4</option>
+            </select>
+            <button id="add-question-button">Add Question</button>
+            <div id="questions-list"></div>
         </section>
     </main>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
-    <script src="scripts.js" type="module"></script>
 </body>
 </html>
