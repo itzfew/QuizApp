@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signOut } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, getDocs, getDoc } from 'firebase/firestore';
+import { getAuth, signInAnonymously, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, doc, setDoc, getDocs, getDoc, updateDoc } from 'firebase/firestore';
 
-// Your Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBngswaoY4gdIMH7_jDfPkCnkTUbttEvUk",
   authDomain: "willing-star-1649162963080.firebaseapp.com",
@@ -23,22 +23,18 @@ const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const quizList = document.getElementById('quizList');
 const pollList = document.getElementById('pollList');
-const addQuizButton = document.getElementById('addQuizButton');
-const addPollButton = document.getElementById('addPollButton');
+const welcomeMessage = document.getElementById('welcomeMessage');
 
-// Sign in anonymously
+// Login and Logout
 loginButton.addEventListener('click', async () => {
     try {
         await signInAnonymously(auth);
         console.log('User signed in');
-        fetchQuizzes();
-        fetchPolls();
     } catch (error) {
         console.error('Error signing in:', error);
     }
 });
 
-// Sign out
 logoutButton.addEventListener('click', async () => {
     try {
         await signOut(auth);
@@ -48,49 +44,7 @@ logoutButton.addEventListener('click', async () => {
     }
 });
 
-// Add a quiz
-addQuizButton.addEventListener('click', async () => {
-    const quizId = prompt('Enter quiz ID:');
-    const question = prompt('Enter quiz question:');
-    const options = prompt('Enter options (comma-separated):').split(',');
-    const correctOption = parseInt(prompt('Enter the index of the correct option:'));
-
-    try {
-        await setDoc(doc(db, 'quizzes', quizId), {
-            question: question,
-            options: options,
-            correctOption: correctOption
-        });
-        console.log('Quiz added successfully!');
-        fetchQuizzes();
-    } catch (error) {
-        console.error('Error adding quiz:', error);
-    }
-});
-
-// Add a poll
-addPollButton.addEventListener('click', async () => {
-    const pollId = prompt('Enter poll ID:');
-    const question = prompt('Enter poll question:');
-    const options = prompt('Enter options (comma-separated):').split(',');
-
-    try {
-        await setDoc(doc(db, 'polls', pollId), {
-            question: question,
-            options: options.reduce((acc, option, index) => {
-                acc[`option${index + 1}`] = option;
-                return acc;
-            }, {}),
-            votes: {}
-        });
-        console.log('Poll added successfully!');
-        fetchPolls();
-    } catch (error) {
-        console.error('Error adding poll:', error);
-    }
-});
-
-// Fetch quizzes
+// Fetch quizzes and polls
 async function fetchQuizzes() {
     const querySnapshot = await getDocs(collection(db, 'quizzes'));
     quizList.innerHTML = '';
@@ -105,12 +59,12 @@ async function fetchQuizzes() {
                     <li class="${index === data.correctOption ? 'correct-option' : ''}">${option}</li>
                 `).join('')}
             </ul>
+            <button onclick="submitQuiz('${doc.id}')">Submit Answer</button>
         `;
         quizList.appendChild(quizElement);
     });
 }
 
-// Fetch polls
 async function fetchPolls() {
     const querySnapshot = await getDocs(collection(db, 'polls'));
     pollList.innerHTML = '';
@@ -121,11 +75,98 @@ async function fetchPolls() {
         pollElement.innerHTML = `
             <p><strong>Question:</strong> ${data.question}</p>
             <ul>
-                ${Object.values(data.options).map(option => `
-                    <li>${option}</li>
+                ${Object.entries(data.options).map(([key, option]) => `
+                    <li><input type="radio" name="${doc.id}" value="${key}"> ${option}</li>
                 `).join('')}
             </ul>
+            <button onclick="submitPoll('${doc.id}')">Vote</button>
+            <div class="progress-bar" id="progress-${doc.id}"></div>
         `;
         pollList.appendChild(pollElement);
     });
 }
+// Submit quiz answer
+async function submitQuiz(quizId) {
+    const selectedOption = prompt('Enter the index of your answer:');
+    const user = auth.currentUser;
+    if (user) {
+        await setDoc(doc(db, 'responses', `${user.uid}_${quizId}`), {
+            userId: user.uid,
+            quizId: quizId,
+            answer: parseInt(selectedOption),
+            type: 'quiz'
+        });
+        alert('Quiz submitted successfully!');
+    } else {
+        alert('You must be logged in to submit.');
+    }
+}
+
+// Submit poll vote
+async function submitPoll(pollId) {
+    const form = document.querySelector(`input[name="${pollId}"]:checked`);
+    if (form) {
+        const selectedOption = form.value;
+        const user = auth.currentUser;
+        if (user) {
+            await setDoc(doc(db, 'responses', `${user.uid}_${pollId}`), {
+                userId: user.uid,
+                pollId: pollId,
+                answer: selectedOption,
+                type: 'poll'
+            });
+            alert('Vote recorded successfully!');
+            updatePollProgress(pollId);
+        } else {
+            alert('You must be logged in to vote.');
+        }
+    } else {
+        alert('Please select an option.');
+    }
+}
+
+// Update poll progress bar
+async function updatePollProgress(pollId) {
+    const responsesSnapshot = await getDocs(collection(db, 'responses').where('pollId', '==', pollId));
+    const totalVotes = responsesSnapshot.size;
+    const voteCounts = {};
+    responsesSnapshot.forEach(doc => {
+        const data = doc.data();
+        if (!voteCounts[data.answer]) {
+            voteCounts[data.answer] = 0;
+        }
+        voteCounts[data.answer]++;
+    });
+
+    const progressElement = document.getElementById(`progress-${pollId}`);
+    if (progressElement) {
+        // Calculate the percentage of votes for each option
+        const options = document.querySelectorAll(`input[name="${pollId}"]`);
+        options.forEach(option => {
+            const optionValue = option.value;
+            const votes = voteCounts[optionValue] || 0;
+            const percentage = (votes / totalVotes) * 100;
+            const progressBar = document.createElement('div');
+            progressBar.style.width = `${percentage}%`;
+            progressBar.style.backgroundColor = '#4CAF50';
+            progressBar.style.height = '1rem';
+            progressBar.style.borderRadius = '5px';
+            progressElement.appendChild(progressBar);
+        });
+    }
+}
+
+// Update welcome message
+onAuthStateChanged(auth, user => {
+    if (user) {
+        welcomeMessage.textContent = `Welcome back, ${user.uid}!`;
+        loginButton.style.display = 'none';
+        logoutButton.style.display = 'inline';
+        fetchQuizzes();
+        fetchPolls();
+    } else {
+        welcomeMessage.textContent = 'Welcome to the Quiz and Poll App!';
+        loginButton.style.display = 'inline';
+        logoutButton.style.display = 'none';
+    }
+});
