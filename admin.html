@@ -1,29 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
-  <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-  <script defer src="js/firebase-config.js"></script>
-  <script defer src="js/admin.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="admin.js" defer></script>
 </head>
 <body>
-  <h1>Admin Dashboard</h1>
-  <div>
-    <h2>Add Quiz</h2>
-    <form id="quizForm">
-      <label for="quizTitle">Title:</label>
-      <input type="text" id="quizTitle" required><br>
-      <label for="question1">Question 1:</label>
-      <input type="text" id="question1" required><br>
-      <label for="options1">Options (comma-separated):</label>
-      <input type="text" id="options1" required><br>
-      <!-- Add more questions/fields as needed -->
-      <button type="submit">Add Quiz</button>
-    </form>
-  </div>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <button id="logoutButton">Logout</button>
+    </header>
+
+    <main>
+        <section id="addQuizSection">
+            <h2>Add Quiz</h2>
+            <form id="addQuizForm">
+                <input type="text" id="quizQuestion" placeholder="Question" required>
+                <input type="text" id="quizOptions" placeholder="Options (comma-separated)" required>
+                <input type="number" id="quizCorrectOption" placeholder="Index of correct option" required>
+                <button type="submit">Add Quiz</button>
+            </form>
+        </section>
+
+        <section id="addPollSection">
+            <h2>Add Poll</h2>
+            <form id="addPollForm">
+                <input type="text" id="pollQuestion" placeholder="Question" required>
+                <input type="text" id="pollOptions" placeholder="Options (comma-separated)" required>
+                <button type="submit">Add Poll</button>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
