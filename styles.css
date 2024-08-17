@@ -1,41 +1,13 @@
+/* Existing styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-header img {
-    height: 40px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-nav a, nav button {
-    color: #fff;
-    text-decoration: none;
-    margin: 0 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-main {
-    padding: 20px;
-}
-
-#poll-form, #auth-section, #user-info {
-    margin-bottom: 20px;
+/* Poll form styles */
+#poll-form {
+    margin: 20px;
 }
 
 .poll-option {
@@ -43,25 +15,53 @@ main {
     margin: 5px 0;
 }
 
+/* Poll list styles */
 .poll {
     border: 1px solid #ddd;
     padding: 10px;
-    margin-bottom: 10px;
-}
-
-.poll .options {
     margin: 10px 0;
 }
 
-.poll .actions button {
-    margin-right: 5px;
+.question {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.option {
+    margin: 5px 0;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #4caf50;
+    width: 0;
+    border-radius: 5px;
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
+}
+
+.actions {
+    margin-top: 10px;
+}
+
+.actions button {
+    margin-right: 10px;
 }
 
 .verified {
-    color: green;
+    color: #4caf50;
 }
 
-.dark {
-    background-color: #121212;
-    color: #e0e0e0;
+.sign-out {
+    display: inline;
 }
