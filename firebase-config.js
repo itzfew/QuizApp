@@ -1,12 +1,12 @@
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA_dNTrWIo8fSTub-J4uh_Yjf4Fr_qay3c",
-  authDomain: "ind-edu.firebaseapp.com",
-  databaseURL: "https://ind-edu-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ind-edu",
-  storageBucket: "ind-edu.appspot.com",
-  messagingSenderId: "60520122150",
-  appId: "1:60520122150:web:0205f57353dae6cfc723e7",
-  measurementId: "G-XLZRGM88T9"
+  apiKey: "AIzaSyBngswaoY4gdIMH7_jDfPkCnkTUbttEvUk",
+  authDomain: "willing-star-1649162963080.firebaseapp.com",
+  projectId: "willing-star-1649162963080",
+  storageBucket: "willing-star-1649162963080.appspot.com",
+  messagingSenderId: "711266174647",
+  appId: "1:711266174647:web:a9bda7a6963d789c82ef32",
+  measurementId: "G-S06YSXZ20W"
 };
 
 // Initialize Firebase
