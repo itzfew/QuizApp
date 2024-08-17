@@ -3,14 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poll App</title>
+    <title>Poll Sharing Website</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="module" src="scripts.js" defer></script>
 </head>
 <body>
-    <div id="root"></div>
-    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.js"></script>
-    <script src="index.js"></script>
+    <header>
+        <img src="logo.png" alt="IND EDU Logo" id="logo">
+        <h1>Ind Edu</h1>
+        <nav>
+            <a href="profile.html" id="profile-link">Profile</a>
+            <a href="settings.html" id="settings-link">Settings</a>
+            <button id="sign-out" style="display: none;">Sign Out</button>
+        </nav>
+    </header>
+    <main>
+        <section id="poll-form" style="display: none;">
+            <h2>Create a Poll</h2>
+            <input type="text" id="poll-question" placeholder="Poll Question" />
+            <div id="poll-options">
+                <input type="text" class="poll-option" placeholder="Option 1" />
+                <input type="text" class="poll-option" placeholder="Option 2" />
+            </div>
+            <button id="add-option">Add Option</button>
+            <button id="submit-poll">Submit Poll</button>
+        </section>
+        <section id="polls">
+            <h2>Polls</h2>
+            <div id="poll-list"></div>
+        </section>
+    </main>
 </body>
 </html>
