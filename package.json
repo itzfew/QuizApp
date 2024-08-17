@@ -1,0 +1,22 @@
+{
+  "name": "poll-app",
+  "version": "1.0.0",
+  "description": "A poll app with Firebase",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build"
+  },
+  "dependencies": {
+    "firebase": "^9.20.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "4.0.3"
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
+  },
+  "homepage": "."
+}
