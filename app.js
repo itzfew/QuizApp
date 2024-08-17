@@ -1,5 +1,6 @@
+// app.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
@@ -20,67 +21,10 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Profile page logic
-if (window.location.pathname.includes('profile.html')) {
-    const authSection = document.getElementById('auth-section');
-    const userInfo = document.getElementById('user-info');
-    const usernameDisplay = document.getElementById('username-display');
-    const signOutButton = document.getElementById('sign-out');
-    const viewPollsButton = document.getElementById('view-polls');
-
-    signOutButton.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Error signing out: ', error);
-        }
-    });
-
-    document.getElementById('sign-in').addEventListener('click', async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            alert('Welcome back!');
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Error signing in: ', error);
-        }
-    });
-
-    document.getElementById('sign-up').addEventListener('click', async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            alert('Welcome to Ind Edu!');
-            window.location.href = 'profile.html';
-        } catch (error) {
-            console.error('Error signing up: ', error);
-        }
-    });
-
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            authSection.style.display = 'none';
-            userInfo.style.display = 'block';
-            usernameDisplay.textContent = user.email.split('@')[0];
-        } else {
-            authSection.style.display = 'block';
-            userInfo.style.display = 'none';
-        }
-    });
-
-    viewPollsButton.addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
-}
-
-// Main index page logic for polls
 if (window.location.pathname.includes('index.html')) {
     const pollForm = document.getElementById('poll-form');
     const signOutButton = document.getElementById('sign-out');
+    const pollList = document.getElementById('poll-list');
 
     onAuthStateChanged(auth, user => {
         if (user) {
@@ -93,10 +37,9 @@ if (window.location.pathname.includes('index.html')) {
     });
 
     document.getElementById('submit-poll').addEventListener('click', async () => {
-        const pollQuestion = document.getElementById('poll-question').value;
+        const question = document.getElementById('poll-question').value;
         const options = document.getElementById('poll-options').value.split(',').map(opt => opt.trim());
-
-        if (pollQuestion.trim() === '' || options.length === 0) {
+        if (question.trim() === '' || options.length === 0) {
             alert('Poll question and options cannot be empty.');
             return;
         }
@@ -104,34 +47,25 @@ if (window.location.pathname.includes('index.html')) {
         if (auth.currentUser) {
             try {
                 await addDoc(collection(db, 'polls'), {
-                    question: pollQuestion,
+                    question: question,
                     options: options,
                     timestamp: serverTimestamp(),
-                    uid: auth.currentUser.uid
+                    uid: auth.currentUser.uid,
+                    votes: Array(options.length).fill(0) // Initialize votes count for each option
                 });
                 document.getElementById('poll-question').value = '';
                 document.getElementById('poll-options').value = '';
                 displayPolls();
-                alert('Poll added successfully!');
+                alert('Poll created successfully!');
             } catch (error) {
-                console.error('Error adding poll: ', error);
+                console.error('Error creating poll: ', error);
             }
         } else {
             alert('You must be logged in to create a poll.');
         }
     });
 
-    document.getElementById('sign-out').addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            window.location.href = 'profile.html';
-        } catch (error) {
-            console.error('Error signing out: ', error);
-        }
-    });
-
     async function displayPolls() {
-        const pollList = document.getElementById('poll-list');
         pollList.innerHTML = '';
 
         try {
@@ -142,72 +76,68 @@ if (window.location.pathname.includes('index.html')) {
                 const pollDiv = document.createElement('div');
                 pollDiv.classList.add('poll');
 
-                // Format timestamp
-                const timestamp = poll.timestamp.toDate();
-                const formattedDate = timestamp.toLocaleString('en-US', { 
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', 
-                    hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' 
-                });
-
+                // Add poll question
                 pollDiv.innerHTML = `
-                    <div class="question">${poll.question}</div>
-                    <div class="options">
-                        ${poll.options.map(option => `<button onclick="vote('${doc.id}', '${option}')">${option}</button>`).join('')}
+                    <h3>${poll.question}</h3>
+                    <div id="poll-options-${doc.id}" class="poll-options">
+                        ${poll.options.map((option, index) => `
+                            <button onclick="vote('${doc.id}', ${index})">${option}</button>
+                        `).join('')}
                     </div>
-                    <div class="date">Published on: ${formattedDate}</div>
-                    <div class="actions">
-                        ${auth.currentUser && auth.currentUser.uid === poll.uid ? `
-                            <button class="edit-btn" onclick="editPoll('${doc.id}', '${poll.question}', '${poll.options.join(',')}')"><i class="fa fa-edit"></i> Edit</button>
-                            <button class="delete-btn" onclick="deletePoll('${doc.id}')"><i class="fa fa-trash"></i> Delete</button>
-                        ` : ''}
-                    </div>
+                    <div id="progress-${doc.id}" class="progress-bar"></div>
                 `;
                 pollList.appendChild(pollDiv);
+
+                // Listen to real-time updates
+                onSnapshot(doc.ref, (updatedDoc) => {
+                    updatePollDisplay(updatedDoc);
+                });
             });
         } catch (error) {
             console.error('Error getting polls: ', error);
         }
     }
 
-    window.editPoll = async function(pollId, currentQuestion, currentOptions) {
-        const newQuestion = prompt('Edit your poll question:', currentQuestion);
-        const newOptions = prompt('Edit your poll options (comma separated):', currentOptions);
-        if (newQuestion !== null && newOptions !== null && newQuestion.trim() !== '' && newOptions.trim() !== '') {
-            try {
-                const pollRef = doc(db, 'polls', pollId);
-                await updateDoc(pollRef, {
-                    question: newQuestion,
-                    options: newOptions.split(',').map(opt => opt.trim())
-                });
-                displayPolls();
-            } catch (error) {
-                console.error('Error updating poll: ', error);
-            }
-        }
-    };
+    function updatePollDisplay(updatedDoc) {
+        const poll = updatedDoc.data();
+        const totalVotes = poll.votes.reduce((acc, val) => acc + val, 0);
+        const progressDiv = document.getElementById(`progress-${updatedDoc.id}`);
+        const optionsDiv = document.getElementById(`poll-options-${updatedDoc.id}`);
 
-    window.deletePoll = async function(pollId) {
-        if (confirm('Are you sure you want to delete this poll?')) {
-            try {
-                await deleteDoc(doc(db, 'polls', pollId));
-                displayPolls();
-            } catch (error) {
-                console.error('Error deleting poll: ', error);
-            }
-        }
-    };
+        progressDiv.innerHTML = poll.options.map((option, index) => {
+            const percentage = totalVotes > 0 ? (poll.votes[index] / totalVotes * 100).toFixed(2) : 0;
+            return `
+                <div class="progress-option">
+                    <span>${option}</span>
+                    <div class="progress-bar-inner" style="width: ${percentage}%"></div>
+                    <span>${percentage}%</span>
+                </div>
+            `;
+        }).join('');
+    }
 
-    function vote(pollId, option) {
+    window.vote = async function(pollId, optionIndex) {
         if (auth.currentUser) {
             try {
-                addDoc(collection(db, 'pollResponses'), {
+                const pollRef = doc(db, 'polls', pollId);
+                const pollDoc = await getDoc(pollRef);
+                const poll = pollDoc.data();
+
+                // Update poll votes
+                const updatedVotes = [...poll.votes];
+                updatedVotes[optionIndex] += 1;
+
+                await updateDoc(pollRef, { votes: updatedVotes });
+
+                // Record user's vote
+                await addDoc(collection(db, 'pollResponses'), {
                     pollId: pollId,
-                    option: option,
+                    optionIndex: optionIndex,
                     uid: auth.currentUser.uid,
                     timestamp: serverTimestamp()
                 });
             } catch (error) {
-                console.error('Error submitting vote: ', error);
+                console.error('Error voting: ', error);
             }
         } else {
             alert('You must be logged in to vote.');
