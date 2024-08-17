@@ -1,10 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-// Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAolcB_o6f1CUmQOHbrn7CNjqunIms9g5s",
+  apiKey: "AIzaSyDLgqLgIcMW4H4pLN3gkFj9BxlV5sFfP0Y",
   authDomain: "quiz-app-6e2d9.firebaseapp.com",
   projectId: "quiz-app-6e2d9",
   storageBucket: "quiz-app-6e2d9.appspot.com",
@@ -179,25 +178,67 @@ document.getElementById('create-exam-button').addEventListener('click', async ()
             return;
         }
 
-        await addDoc(collection(db, 'exams'), {
+        const examRef = await addDoc(collection(db, 'exams'), {
             title: title,
             description: description,
             timestamp: serverTimestamp(),
             creatorId: user.uid
         });
         alert('Exam created successfully!');
-        displayExamsAdmin(); // Refresh exams list
         document.getElementById('exam-title').value = '';
         document.getElementById('exam-description').value = '';
+        displayExamsAdmin(); // Refresh exams list
+        displayManageQuestions(examRef.id); // Show manage questions section
     } catch (error) {
         console.error('Error creating exam: ', error);
     }
 });
 
-// Edit Exam
+// Edit Exam (Show manage questions section)
 function editExam(examId) {
-    // Implement edit functionality
-    alert(`Edit functionality for exam ${examId} is not implemented yet.`);
+    displayManageQuestions(examId);
+}
+
+// Show Manage Questions Section
+async function displayManageQuestions(examId) {
+    document.getElementById('manage-questions').style.display = 'block';
+    document.getElementById('create-exam').style.display = 'none';
+    document.getElementById('exam-list').style.display = 'none';
+
+    // Handle Add Question
+    document.getElementById('add-question').addEventListener('click', async () => {
+        const questionText = document.getElementById('question-text').value.trim();
+        const options = [
+            document.getElementById('option-1').value.trim(),
+            document.getElementById('option-2').value.trim(),
+            document.getElementById('option-3').value.trim(),
+            document.getElementById('option-4').value.trim()
+        ];
+        const correctOption = parseInt(document.getElementById('correct-option').value.trim());
+
+        if (questionText === '' || options.some(option => option === '') || isNaN(correctOption) || correctOption < 0 || correctOption >= options.length) {
+            alert('Invalid question or options.');
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, 'exams', examId, 'questions'), {
+                questionText: questionText,
+                options: options,
+                correctOption: correctOption,
+                timestamp: serverTimestamp()
+            });
+            alert('Question added successfully!');
+            document.getElementById('question-text').value = '';
+            document.getElementById('option-1').value = '';
+            document.getElementById('option-2').value = '';
+            document.getElementById('option-3').value = '';
+            document.getElementById('option-4').value = '';
+            document.getElementById('correct-option').value = '';
+        } catch (error) {
+            console.error('Error adding question: ', error);
+        }
+    });
 }
 
 // Delete Exam
@@ -211,11 +252,9 @@ async function deleteExam(examId) {
     }
 }
 
-// Initialize pages
+// Initialize page based on URL
 if (window.location.pathname.endsWith('exam.html')) {
     displayExamContent();
-} else if (window.location.pathname.endsWith('index.html')) {
-    displayQuizzes();
 } else if (window.location.pathname.endsWith('admin.html')) {
     displayExamsAdmin();
 }
