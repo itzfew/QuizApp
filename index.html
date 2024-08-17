@@ -3,25 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polls and Quiz App</title>
+    <title>Post Sharing Website</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="module" src="scripts.js" defer></script>
 </head>
 <body>
-    <h1>Polls and Quiz App</h1>
-    
-    <div id="poll-form">
-        <h2>Create Poll</h2>
-        <input type="text" id="poll-question" placeholder="Poll Question">
-        <input type="text" id="poll-option1" placeholder="Option 1">
-        <input type="text" id="poll-option2" placeholder="Option 2">
-        <button onclick="createPoll()">Create Poll</button>
-    </div>
-    
-    <div id="polls-list">
-        <h2>Polls</h2>
-        <div id="polls"></div>
-    </div>
-
-    <script type="module" src="script.js"></script>
+    <header>
+        <img src="logo.png" alt="IND EDU Logo" id="logo">
+        <h1>Ind Edu</h1>
+        <nav>
+            <a href="profile.html" id="profile-link">Profile</a>
+            <a href="settings.html" id="settings-link">Settings</a>
+            <button id="sign-out" style="display: none;">Sign Out</button>
+        </nav>
+    </header>
+    <main>
+        <section id="post-form" style="display: none;">
+            <h2>Share a Post</h2>
+            <input type="text" id="display-name" placeholder="Display Name" />
+            <textarea id="post-content" placeholder="Write your post here..."></textarea>
+            <button id="submit-post">Post</button>
+        </section>
+        <section id="posts">
+            <h2>Posts</h2>
+            <input type="text" id="search-input" placeholder="Search posts..." />
+            <div id="post-list"></div>
+        </section>
+    </main>
 </body>
 </html>
