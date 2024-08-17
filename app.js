@@ -1,4 +1,83 @@
-// Main index page logic
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDLKPOqok8VS3gR4TAEGCEH4IEJL8kKpvw",
+    authDomain: "ind-edu-f63b0.firebaseapp.com",
+    projectId: "ind-edu-f63b0",
+    storageBucket: "ind-edu-f63b0.appspot.com",
+    messagingSenderId: "405906160405",
+    appId: "1:405906160405:web:7040d4f0118fa01d13071c",
+    measurementId: "G-EPQM943Y2V"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Profile page logic
+if (window.location.pathname.includes('profile.html')) {
+    const authSection = document.getElementById('auth-section');
+    const userInfo = document.getElementById('user-info');
+    const usernameDisplay = document.getElementById('username-display');
+    const signOutButton = document.getElementById('sign-out');
+    const viewPollsButton = document.getElementById('view-polls');
+
+    signOutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Error signing out: ', error);
+        }
+    });
+
+    document.getElementById('sign-in').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert('Welcome back!');
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Error signing in: ', error);
+        }
+    });
+
+    document.getElementById('sign-up').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            alert('Welcome to Ind Edu!');
+            window.location.href = 'profile.html';
+        } catch (error) {
+            console.error('Error signing up: ', error);
+        }
+    });
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            authSection.style.display = 'none';
+            userInfo.style.display = 'block';
+            usernameDisplay.textContent = user.email.split('@')[0];
+        } else {
+            authSection.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    });
+
+    viewPollsButton.addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+}
+
+// Main index page logic for polls
 if (window.location.pathname.includes('index.html')) {
     const pollForm = document.getElementById('poll-form');
     const signOutButton = document.getElementById('sign-out');
