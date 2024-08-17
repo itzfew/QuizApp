@@ -101,15 +101,24 @@ if (window.location.pathname.includes('index.html')) {
                 // Check if poll creator is the current user
                 const isCreator = auth.currentUser && auth.currentUser.uid === poll.uid;
 
-                // Display options and voting buttons
+                // Calculate progress percentages
+                const totalVotes = Object.keys(poll.responses).length;
+                const optionCounts = poll.options.map((_, index) => 
+                    Object.values(poll.responses).filter(response => response === index.toString()).length
+                );
+                const optionPercentages = optionCounts.map(count => totalVotes === 0 ? 0 : (count / totalVotes * 100).toFixed(2));
+
                 pollDiv.innerHTML = `
                     <div class="question">${poll.question}</div>
                     <div class="options">
                         ${poll.options.map((option, index) => `
                             <div class="option">
                                 <label>
-                                    <input type="radio" name="poll-${doc.id}" value="${index}"> ${option}
+                                    <input type="radio" name="poll-${doc.id}" value="${index}" ${poll.responses[auth.currentUser?.uid] == index.toString() ? 'checked' : ''}> ${option}
                                 </label>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: ${optionPercentages[index]}%">${optionPercentages[index]}%</div>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
@@ -118,9 +127,9 @@ if (window.location.pathname.includes('index.html')) {
                             <button class="edit-btn" onclick="editPoll('${doc.id}', '${poll.question}', ${JSON.stringify(poll.options)})"><i class="fa fa-edit"></i> Edit</button>
                             <button class="delete-btn" onclick="deletePoll('${doc.id}')"><i class="fa fa-trash"></i> Delete</button>
                         ` : ''}
-                        <button class="vote-btn" onclick="votePoll('${doc.id}')"><i class="fa fa-vote-yea"></i> Vote</button>
+                        <button class="vote-btn" onclick="votePoll('${doc.id}')"><i class="fa fa-vote"></i> Vote</button>
                     </div>
-                    <div class="date">Published on: ${formattedDate}</div>
+                    <div class="date">Created on: ${formattedDate}</div>
                 `;
                 pollList.appendChild(pollDiv);
             });
@@ -131,10 +140,10 @@ if (window.location.pathname.includes('index.html')) {
 
     window.editPoll = async function(pollId, currentQuestion, currentOptions) {
         const newQuestion = prompt('Edit your poll question:', currentQuestion);
-        const newOptions = prompt('Edit your poll options (comma-separated):', currentOptions.join(','));
-        if (newQuestion !== null && newOptions !== null) {
-            const optionsArray = newOptions.split(',').map(opt => opt.trim());
-            if (newQuestion.trim() !== '' && optionsArray.every(opt => opt !== '')) {
+        if (newQuestion !== null && newQuestion.trim() !== '') {
+            const newOptions = prompt('Edit your options (comma separated):', currentOptions.join(','));
+            if (newOptions !== null) {
+                const optionsArray = newOptions.split(',').map(option => option.trim());
                 try {
                     const pollRef = doc(db, 'polls', pollId);
                     await updateDoc(pollRef, {
@@ -164,12 +173,10 @@ if (window.location.pathname.includes('index.html')) {
         const selectedOption = document.querySelector(`input[name="poll-${pollId}"]:checked`);
         if (selectedOption) {
             const selectedValue = selectedOption.value;
-            const userId = auth.currentUser.uid;
-
             try {
                 const pollRef = doc(db, 'polls', pollId);
                 await updateDoc(pollRef, {
-                    [`responses.${userId}`]: selectedValue
+                    [`responses.${auth.currentUser.uid}`]: selectedValue
                 });
                 displayPolls();
                 alert('Your vote has been recorded!');
