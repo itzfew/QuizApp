@@ -1,29 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ind Edu Quiz App</title>
-  <link rel="stylesheet" href="styles.css">
-  <script type="module" src="app.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poll App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Ind Edu Quiz App</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="settings.html">Settings</a>
-      <a href="profile.html" id="sign-out">Sign Out</a>
-    </nav>
-  </header>
-  <div class="container">
-    <div id="poll-form">
-      <h2>Create a Poll</h2>
-      <input type="text" id="poll-question" placeholder="Poll question">
-      <textarea id="poll-options" placeholder="Option 1\nOption 2\nOption 3"></textarea>
-      <button id="submit-poll">Submit Poll</button>
-    </div>
-    <div id="poll-list"></div>
-  </div>
+    <div id="root"></div>
+    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
