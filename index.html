@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz and Poll App</title>
+    <title>Polls</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="app.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1 id="welcomeMessage"></h1>
-        <button id="loginButton">Login</button>
-        <button id="logoutButton" style="display:none;">Logout</button>
-    </header>
+    <div id="auth-section">
+        <!-- Authentication controls -->
+    </div>
 
-    <main>
-        <section id="quizSection">
-            <h2>Quizzes</h2>
-            <div id="quizList"></div>
-        </section>
+    <div id="user-info">
+        <div id="username-display"></div>
+        <button id="sign-out">Sign Out</button>
+    </div>
 
-        <section id="pollSection">
-            <h2>Polls</h2>
-            <div id="pollList"></div>
-        </section>
-    </main>
+    <div id="poll-form">
+        <h2>Create a Poll</h2>
+        <input type="text" id="poll-question" placeholder="Poll Question">
+        <textarea id="poll-options" placeholder="Options (comma separated)"></textarea>
+        <button id="submit-poll">Submit Poll</button>
+    </div>
+
+    <div id="poll-list">
+        <!-- Polls will be displayed here -->
+    </div>
+
+    <script type="module" src="app.js"></script>
 </body>
 </html>
