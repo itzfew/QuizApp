@@ -1,15 +1,15 @@
 {
   "indexes": [
     {
-      "collectionGroup": "posts",
+      "collectionId": "exams",
       "fields": [
-        { "fieldPath": "timestamp", "mode": "DESCENDING" }
+        { "fieldPath": "timestamp", "mode": "ASCENDING" }
       ]
     },
     {
-      "collectionGroup": "replies",
+      "collectionId": "questions",
       "fields": [
-        { "fieldPath": "timestamp", "mode": "DESCENDING" }
+        { "fieldPath": "examId", "mode": "ASCENDING" }
       ]
     }
   ]
