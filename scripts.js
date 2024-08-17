@@ -3,6 +3,7 @@ import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimest
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
+// Firebase configuration and initialization
 const firebaseConfig = {
   apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
   authDomain: "quizapp-1ae20.firebaseapp.com",
@@ -18,63 +19,6 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Profile page logic
-if (window.location.pathname.includes('profile.html')) {
-    const authSection = document.getElementById('auth-section');
-    const userInfo = document.getElementById('user-info');
-    const usernameDisplay = document.getElementById('username-display');
-    const signOutButton = document.getElementById('sign-out');
-    const viewPostsButton = document.getElementById('view-posts');
-
-    signOutButton.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Error signing out: ', error);
-        }
-    });
-
-    document.getElementById('sign-in').addEventListener('click', async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            alert('Welcome back!');
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Error signing in: ', error);
-        }
-    });
-
-    document.getElementById('sign-up').addEventListener('click', async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            alert('Welcome to Ind Edu!');
-            window.location.href = 'profile.html';
-        } catch (error) {
-            console.error('Error signing up: ', error);
-        }
-    });
-
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            authSection.style.display = 'none';
-            userInfo.style.display = 'block';
-            usernameDisplay.textContent = user.email.split('@')[0];
-        } else {
-            authSection.style.display = 'block';
-            userInfo.style.display = 'none';
-        }
-    });
-
-    viewPostsButton.addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
-}
-
 // Main index page logic
 if (window.location.pathname.includes('index.html')) {
     const pollForm = document.getElementById('poll-form');
@@ -84,6 +28,7 @@ if (window.location.pathname.includes('index.html')) {
         if (user) {
             pollForm.style.display = 'block';
             signOutButton.style.display = 'inline';
+            displayPolls();
         } else {
             pollForm.style.display = 'none';
             signOutButton.style.display = 'none';
@@ -104,7 +49,8 @@ if (window.location.pathname.includes('index.html')) {
                     question: pollQuestion,
                     options: pollOptions,
                     timestamp: serverTimestamp(),
-                    uid: auth.currentUser.uid
+                    uid: auth.currentUser.uid,
+                    responses: {}
                 });
                 document.getElementById('poll-question').value = '';
                 document.querySelectorAll('.poll-option').forEach(option => option.value = '');
@@ -116,6 +62,12 @@ if (window.location.pathname.includes('index.html')) {
         } else {
             alert('You must be logged in to create a poll.');
         }
+    });
+
+    document.getElementById('add-option').addEventListener('click', () => {
+        const optionDiv = document.createElement('div');
+        optionDiv.innerHTML = `<input type="text" class="poll-option" placeholder="New Option" />`;
+        document.getElementById('poll-options').appendChild(optionDiv);
     });
 
     document.getElementById('sign-out').addEventListener('click', async () => {
@@ -148,7 +100,8 @@ if (window.location.pathname.includes('index.html')) {
 
                 // Check if poll creator is the current user
                 const isCreator = auth.currentUser && auth.currentUser.uid === poll.uid;
-                
+
+                // Display options and voting buttons
                 pollDiv.innerHTML = `
                     <div class="question">${poll.question}</div>
                     <div class="options">
@@ -227,35 +180,4 @@ if (window.location.pathname.includes('index.html')) {
             alert('Please select an option before voting.');
         }
     };
-
-    displayPolls();
-}
-
-// Settings page logic
-if (window.location.pathname.includes('settings.html')) {
-    const themeSelect = document.getElementById('theme-select');
-    const fontSizeSelect = document.getElementById('font-size');
-
-    themeSelect.addEventListener('change', () => {
-        const theme = themeSelect.value;
-        document.body.className = theme;
-        localStorage.setItem('theme', theme);
-    });
-
-    fontSizeSelect.addEventListener('change', () => {
-        const fontSize = fontSizeSelect.value;
-        document.body.style.fontSize = fontSize === 'small' ? '14px' :
-            fontSize === 'medium' ? '16px' : '18px';
-        localStorage.setItem('fontSize', fontSize);
-    });
-
-    window.addEventListener('load', () => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        const savedFontSize = localStorage.getItem('fontSize') || 'medium';
-        document.body.className = savedTheme;
-        themeSelect.value = savedTheme;
-        document.body.style.fontSize = savedFontSize === 'small' ? '14px' :
-            savedFontSize === 'medium' ? '16px' : '18px';
-        fontSizeSelect.value = savedFontSize;
-    });
 }
