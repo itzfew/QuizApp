@@ -1,9 +1,8 @@
-// Import Firebase modules from CDN
+// firebase-config.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
 
-// Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyA_dNTrWIo8fSTub-J4uh_Yjf4Fr_qay3c",
   authDomain: "ind-edu.firebaseapp.com",
@@ -17,8 +16,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Export for use in other files
-export { auth, db };
+export { db, auth };
