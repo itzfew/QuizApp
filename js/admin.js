@@ -1,3 +1,4 @@
+// admin.js
 import { db } from './firebase-config.js';
 import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
 
@@ -31,8 +32,7 @@ function addQuiz(title, questions) {
     alert('Quiz added successfully!');
   })
   .catch((error) => {
-    const errorMessage = error.message;
-    console.error('Error adding quiz:', errorMessage);
-    alert(`Failed to add quiz: ${errorMessage}`);
+    console.error('Error adding quiz:', error.message);
+    alert(`Failed to add quiz: ${error.message}`);
   });
 }
