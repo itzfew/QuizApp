@@ -17,12 +17,24 @@ header {
     border-bottom: 1px solid #ddd;
 }
 
+header #logo {
+    width: 50px;
+    height: 50px;
+    vertical-align: middle;
+}
+
 header h1 {
     margin: 0;
     font-size: 1.5rem;
 }
 
-nav button, nav a {
+nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+nav a, nav button {
     color: #fff;
     background-color: #1877F2;
     padding: 0.5rem 1rem;
@@ -32,7 +44,7 @@ nav button, nav a {
     border-radius: 4px;
 }
 
-nav button:hover, nav a:hover {
+nav a:hover, nav button:hover {
     background-color: #165eab;
 }
 
@@ -42,15 +54,7 @@ main {
     margin: 0 auto;
 }
 
-#exam-content, #create-exam, #manage-questions {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
-
-textarea, input[type="text"], input[type="number"] {
+#exam-title, #exam-description, textarea {
     width: 100%;
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -58,7 +62,11 @@ textarea, input[type="text"], input[type="number"] {
     border-radius: 4px;
 }
 
-button {
+textarea {
+    height: 100px;
+}
+
+#submit-post, #create-exam-button {
     background-color: #1877F2;
     color: #fff;
     border: none;
@@ -68,33 +76,62 @@ button {
     font-size: 1rem;
 }
 
-button:hover {
+#submit-post:hover, #create-exam-button:hover {
     background-color: #165eab;
 }
 
-button:disabled {
-    background-color: #ddd;
-    cursor: not-allowed;
-}
-
-#exam-list, #quizzes {
+#exam-list, #exams-list {
     margin-top: 2rem;
 }
 
-.exam, .quiz {
+.exam, .post {
     background-color: #fff;
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
+    position: relative;
     margin-bottom: 1rem;
 }
 
-.exam h3, .quiz h3 {
-    margin: 0;
-    font-size: 1.2rem;
+.exam .actions, .post .actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.exam p, .quiz p {
-    margin: 0.5rem 0;
+.actions button {
+    background-color: #ddd;
+    color: #333;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.actions .edit-btn {
+    background-color: #ffcc00;
+}
+
+.actions .delete-btn {
+    background-color: #f44336;
+}
+
+.actions .share-btn {
+    background-color: #42b72a;
+}
+
+.actions button:hover {
+    opacity: 0.8;
+}
+
+#sign-out {
+    margin-top: 5px;
+    padding: 15px;
+    background-color: brown;
+}
+
+#admin-link {
+    display: none;
 }
