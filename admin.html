@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - Quiz App</title>
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="admin.js" defer></script>
 </head>
 <body>
     <header>
+        <img src="logo.png" alt="Quiz App Logo" id="logo">
         <h1>Admin Dashboard</h1>
-        <button id="sign-out">Sign Out</button>
+        <nav>
+            <a href="index.html" id="home-link">Home</a>
+            <button id="sign-out">Sign Out</button>
+        </nav>
     </header>
     <main>
         <section id="create-exam">
-            <h2>Create Exam</h2>
-            <input type="text" id="exam-title" placeholder="Exam Title" />
+            <h2>Create New Exam</h2>
+            <input type="text" id="exam-name" placeholder="Exam Name">
             <textarea id="exam-description" placeholder="Exam Description"></textarea>
-            <button id="create-exam-button">Create Exam</button>
+            <button id="create-exam-btn">Create Exam</button>
         </section>
-        <section id="manage-exams">
-            <h2>Manage Exams</h2>
-            <div id="exam-list"></div>
-        </section>
-        <section id="manage-questions" style="display: none;">
-            <h2>Manage Questions</h2>
-            <input type="text" id="question-text" placeholder="Question Text" />
-            <input type="text" id="option1" placeholder="Option 1" />
-            <input type="text" id="option2" placeholder="Option 2" />
-            <input type="text" id="option3" placeholder="Option 3" />
-            <input type="text" id="option4" placeholder="Option 4" />
-            <select id="correct-option">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-                <option value="option4">Option 4</option>
-            </select>
-            <button id="add-question-button">Add Question</button>
-            <div id="questions-list"></div>
+        <section id="add-question">
+            <h2>Add Question to Exam</h2>
+            <input type="text" id="exam-id" placeholder="Exam ID">
+            <input type="text" id="question-text" placeholder="Question Text">
+            <input type="text" id="option1" placeholder="Option 1">
+            <input type="text" id="option2" placeholder="Option 2">
+            <input type="text" id="option3" placeholder="Option 3">
+            <input type="text" id="option4" placeholder="Option 4">
+            <input type="text" id="correct-option" placeholder="Correct Option">
+            <button id="add-question-btn">Add Question</button>
         </section>
     </main>
 </body>
