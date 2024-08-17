@@ -247,3 +247,58 @@ h1 {
     padding: 15px;
     background-color: white;
 }
+/* Existing styles */
+
+.post .like-btn {
+    background-color: #42b72a;
+}
+
+.post .reply-btn {
+    background-color: #007bff;
+}
+
+.post .like-btn, .post .reply-btn {
+    background-color: #ddd;
+    color: #333;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.post .like-btn:hover, .post .reply-btn:hover {
+    opacity: 0.8;
+}
+
+.post .fa {
+    margin-right: 0.5rem;
+}
+
+.reply-form {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reply-form textarea {
+    height: 60px;
+}
+
+.reply-form button {
+    background-color: #1877F2;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.reply-form button:hover {
+    background-color: #165eab;
+}
