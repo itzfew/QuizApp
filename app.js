@@ -1,6 +1,5 @@
-// app.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
@@ -14,13 +13,48 @@ const firebaseConfig = {
   appId: "1:626886802317:web:df08c307697ca235c45bc4",
   measurementId: "G-NKJTC5C1XW"
 };
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// Profile page logic
+if (window.location.pathname.includes('profile.html')) {
+    const authSection = document.getElementById('auth-section');
+    const userInfo = document.getElementById('user-info');
+    const usernameDisplay = document.getElementById('username-display');
+    const signOutButton = document.getElementById('sign-out');
+
+    signOutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Error signing out: ', error);
+        }
+    });
+
+    document.getElementById('sign-in').addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+
+    document.getElementById('sign-up').addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            authSection.style.display = 'none';
+            userInfo.style.display = 'block';
+            usernameDisplay.textContent = user.email.split('@')[0];
+        } else {
+            authSection.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    });
+}
+
+// Main index page logic
 if (window.location.pathname.includes('index.html')) {
     const pollForm = document.getElementById('poll-form');
     const signOutButton = document.getElementById('sign-out');
@@ -67,7 +101,6 @@ if (window.location.pathname.includes('index.html')) {
 
     async function displayPolls() {
         pollList.innerHTML = '';
-
         try {
             const q = query(collection(db, 'polls'), orderBy('timestamp', 'desc'));
             const querySnapshot = await getDocs(q);
@@ -75,74 +108,92 @@ if (window.location.pathname.includes('index.html')) {
                 const poll = doc.data();
                 const pollDiv = document.createElement('div');
                 pollDiv.classList.add('poll');
+                const pollId = doc.id;
 
-                // Add poll question
                 pollDiv.innerHTML = `
                     <h3>${poll.question}</h3>
-                    <div id="poll-options-${doc.id}" class="poll-options">
+                    <div class="poll-options">
                         ${poll.options.map((option, index) => `
-                            <button onclick="vote('${doc.id}', ${index})">${option}</button>
+                            <button onclick="vote('${pollId}', ${index})">${option}</button>
                         `).join('')}
                     </div>
-                    <div id="progress-${doc.id}" class="progress-bar"></div>
+                    <div id="progress-${pollId}" class="progress-bar"></div>
                 `;
-                pollList.appendChild(pollDiv);
 
-                // Listen to real-time updates
-                onSnapshot(doc.ref, (updatedDoc) => {
-                    updatePollDisplay(updatedDoc);
-                });
+                pollList.appendChild(pollDiv);
+                updateProgressBar(pollId, poll.options, poll.votes);
             });
         } catch (error) {
             console.error('Error getting polls: ', error);
         }
     }
 
-    function updatePollDisplay(updatedDoc) {
-        const poll = updatedDoc.data();
-        const totalVotes = poll.votes.reduce((acc, val) => acc + val, 0);
-        const progressDiv = document.getElementById(`progress-${updatedDoc.id}`);
-        const optionsDiv = document.getElementById(`poll-options-${updatedDoc.id}`);
+    window.vote = async function(pollId, optionIndex) {
+        if (!auth.currentUser) {
+            alert('You must be logged in to vote.');
+            return;
+        }
 
-        progressDiv.innerHTML = poll.options.map((option, index) => {
-            const percentage = totalVotes > 0 ? (poll.votes[index] / totalVotes * 100).toFixed(2) : 0;
+        try {
+            const pollRef = doc(db, 'polls', pollId);
+            const pollDoc = await getDoc(pollRef);
+            const poll = pollDoc.data();
+            const votes = poll.votes;
+
+            // Update the votes
+            votes[optionIndex] += 1;
+            await updateDoc(pollRef, { votes: votes });
+
+            // Update the progress bar
+            updateProgressBar(pollId, poll.options, votes);
+        } catch (error) {
+            console.error('Error voting: ', error);
+        }
+    };
+
+    function updateProgressBar(pollId, options, votes) {
+        const totalVotes = votes.reduce((acc, vote) => acc + vote, 0);
+        const progressBar = document.getElementById(`progress-${pollId}`);
+        progressBar.innerHTML = options.map((option, index) => {
+            const percentage = totalVotes > 0 ? (votes[index] / totalVotes) * 100 : 0;
             return `
                 <div class="progress-option">
                     <span>${option}</span>
-                    <div class="progress-bar-inner" style="width: ${percentage}%"></div>
-                    <span>${percentage}%</span>
+                    <div class="progress-bar-inner" style="width: ${percentage}%;"></div>
+                    <span>${Math.round(percentage)}%</span>
                 </div>
             `;
         }).join('');
     }
 
-    window.vote = async function(pollId, optionIndex) {
-        if (auth.currentUser) {
-            try {
-                const pollRef = doc(db, 'polls', pollId);
-                const pollDoc = await getDoc(pollRef);
-                const poll = pollDoc.data();
-
-                // Update poll votes
-                const updatedVotes = [...poll.votes];
-                updatedVotes[optionIndex] += 1;
-
-                await updateDoc(pollRef, { votes: updatedVotes });
-
-                // Record user's vote
-                await addDoc(collection(db, 'pollResponses'), {
-                    pollId: pollId,
-                    optionIndex: optionIndex,
-                    uid: auth.currentUser.uid,
-                    timestamp: serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Error voting: ', error);
-            }
-        } else {
-            alert('You must be logged in to vote.');
-        }
-    }
-
     displayPolls();
+}
+
+// Settings page logic
+if (window.location.pathname.includes('settings.html')) {
+    const themeSelect = document.getElementById('theme-select');
+    const fontSizeSelect = document.getElementById('font-size');
+
+    themeSelect.addEventListener('change', () => {
+        const theme = themeSelect.value;
+        document.body.className = theme;
+        localStorage.setItem('theme', theme);
+    });
+
+    fontSizeSelect.addEventListener('change', () => {
+        const fontSize = fontSizeSelect.value;
+        document.body.style.fontSize = fontSize === 'small' ? '14px' :
+            fontSize === 'medium' ? '16px' : '18px';
+        localStorage.setItem('fontSize', fontSize);
+    });
+
+    window.addEventListener('load', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedFontSize = localStorage.getItem('fontSize') || 'medium';
+        document.body.className = savedTheme;
+        themeSelect.value = savedTheme;
+        document.body.style.fontSize = savedFontSize === 'small' ? '14px' :
+            savedFontSize === 'medium' ? '16px' : '18px';
+        fontSizeSelect.value = savedFontSize;
+    });
 }
