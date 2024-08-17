@@ -2,22 +2,65 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
 }
 
 #auth-section, #user-info {
     padding: 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
 }
 
 #poll-form {
     margin: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
 }
 
 .poll {
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     padding: 10px;
     margin: 10px 0;
+    background-color: #fff;
 }
 
-.poll .options button {
+.poll h3 {
+    margin-top: 0;
+}
+
+.poll-options button {
     margin: 5px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.poll-options button:hover {
+    background-color: #0056b3;
+}
+
+.progress-bar {
+    margin-top: 10px;
+}
+
+.progress-option {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.progress-bar-inner {
+    height: 20px;
+    background-color: #007bff;
+    margin: 0 10px;
+    border-radius: 4px;
+}
+
+.progress-option span {
+    margin-right: 10px;
 }
