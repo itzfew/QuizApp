@@ -42,7 +42,6 @@ nav a, nav button {
     cursor: pointer;
     text-decoration: none;
     border-radius: 4px;
-    font-size: 0.9rem;
 }
 
 nav a:hover, nav button:hover {
@@ -73,12 +72,10 @@ input, textarea {
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 1rem;
 }
 
 textarea {
     height: 100px;
-    resize: vertical;
 }
 
 #submit-post {
@@ -89,8 +86,6 @@ textarea {
     padding: 0.5rem;
     border-radius: 4px;
     font-size: 1rem;
-    display: block;
-    width: 100%;
 }
 
 #submit-post:hover {
@@ -165,6 +160,24 @@ textarea {
     margin-right: 0.5rem;
 }
 
+.replies {
+    margin-top: 1rem;
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+}
+
+.reply {
+    background-color: #f9f9f9;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+.reply .author {
+    font-weight: bold;
+    color: #1877F2;
+}
+
 #auth-section {
     display: flex;
     flex-direction: column;
@@ -184,25 +197,29 @@ textarea {
     display: inline-block;
     text-align: center;
     text-decoration: none;
-    margin: 0.5rem;
-    width: 200px;
+    margin: 0.5rem; /* Space between buttons */
+    width: 200px; /* Fixed width */
 }
 
 #sign-in {
-    background-color: #007bff;
+    background-color: #007bff; /* Blue color */
+    margin-top: 5px;
+    padding: 15px;
 }
 
 #sign-in:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker blue for hover effect */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #sign-up {
-    background-color: #28a745;
+    background-color: #28a745; /* Green color */
+    margin-top: 5px;
+    padding: 15px;
 }
 
 #sign-up:hover {
-    background-color: #218838;
+    background-color: #218838; /* Darker green for hover effect */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -211,7 +228,7 @@ textarea {
 }
 
 .auth-button:active {
-    background-color: #004085;
+    background-color: #004085; /* Slightly darker color when clicked */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -220,21 +237,13 @@ h1 {
     margin: 0;
     font-size: 2rem;
 }
-
 #sign-out {
+    margin-top: 5px;
+    padding: 15px;
     background-color: brown;
-    color: #fff;
 }
-
-#sign-out:hover {
-    background-color: #a52a2a;
-}
-
 #view-posts {
-    background-color: #fff;
-    color: #333;
-}
-
-#view-posts:hover {
-    background-color: #f0f2f5;
+    margin-top: 5px;
+    padding: 15px;
+    background-color: white;
 }
