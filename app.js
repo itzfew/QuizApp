@@ -3,15 +3,15 @@ import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimest
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
-// Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyDLKPOqok8VS3gR4TAEGCEH4IEJL8kKpvw",
-    authDomain: "ind-edu-f63b0.firebaseapp.com",
-    projectId: "ind-edu-f63b0",
-    storageBucket: "ind-edu-f63b0.appspot.com",
-    messagingSenderId: "405906160405",
-    appId: "1:405906160405:web:7040d4f0118fa01d13071c",
-    measurementId: "G-EPQM943Y2V"
+  apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
+  authDomain: "quizapp-1ae20.firebaseapp.com",
+  projectId: "quizapp-1ae20",
+  storageBucket: "quizapp-1ae20.appspot.com",
+  messagingSenderId: "626886802317",
+  appId: "1:626886802317:web:df08c307697ca235c45bc4",
+  measurementId: "G-NKJTC5C1XW"
 };
 
 // Initialize Firebase
