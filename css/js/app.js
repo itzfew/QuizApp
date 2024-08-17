@@ -1,6 +1,10 @@
+import { auth, db } from './firebase-config.js';
+import { collection, doc, getDoc, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+
 // User Authentication Functions
 function register(email, password) {
-  auth.createUserWithEmailAndPassword(email, password)
+  createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       console.log('User registered:', userCredential.user);
     })
@@ -10,7 +14,7 @@ function register(email, password) {
 }
 
 function login(email, password) {
-  auth.signInWithEmailAndPassword(email, password)
+  signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       console.log('User logged in:', userCredential.user);
     })
@@ -20,7 +24,7 @@ function login(email, password) {
 }
 
 function logout() {
-  auth.signOut()
+  signOut(auth)
     .then(() => {
       console.log('User logged out');
     })
@@ -31,10 +35,11 @@ function logout() {
 
 // Fetch and Display Quiz
 function displayQuiz(quizId) {
-  db.collection('quizzes').doc(quizId).get()
-    .then((doc) => {
-      if (doc.exists) {
-        const quiz = doc.data();
+  const quizDocRef = doc(db, 'quizzes', quizId);
+  getDoc(quizDocRef)
+    .then((docSnap) => {
+      if (docSnap.exists()) {
+        const quiz = docSnap.data();
         const appDiv = document.getElementById('app');
         appDiv.innerHTML = `<h2>${quiz.title}</h2>`;
         quiz.questions.forEach((q, index) => {
@@ -60,7 +65,7 @@ function submitQuiz() {
 
 // Add Quiz Function
 function addQuiz(title, questions) {
-  db.collection('quizzes').add({
+  addDoc(collection(db, 'quizzes'), {
     title: title,
     questions: questions
   })
