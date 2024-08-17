@@ -4,56 +4,20 @@ body {
     padding: 0;
 }
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 1rem;
-    text-align: center;
+#auth-section, #user-info {
+    padding: 20px;
 }
 
-button {
-    margin: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    color: white;
-    background-color: #4CAF50;
-    cursor: pointer;
+#poll-form {
+    margin: 20px;
 }
 
-button:hover {
-    background-color: #45a049;
+.poll {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
 }
 
-main {
-    padding: 2rem;
-}
-
-section {
-    margin-bottom: 2rem;
-}
-
-.quiz-item, .poll-item {
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-}
-
-.correct-option {
-    color: green;
-}
-
-.progress-bar {
-    width: 100%;
-    background-color: #f3f3f3;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.progress-bar span {
-    display: block;
-    height: 1rem;
-    background-color: #4CAF50;
-    width: 0;
+.poll .options button {
+    margin: 5px;
 }
