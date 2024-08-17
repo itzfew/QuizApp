@@ -150,7 +150,7 @@ if (window.location.pathname.includes('index.html')) {
                 // Check if display name includes "verify"
                 const isVerified = post.displayName.toLowerCase().includes('verify');
                 const cleanDisplayName = post.displayName.replace(/verify/i, '').trim();
-                
+
                 postDiv.innerHTML = `
                     <div class="author">
                         ${cleanDisplayName} ${isVerified ? '<i class="fa fa-check-circle verified"></i> Verified' : ''}
@@ -264,6 +264,32 @@ if (window.location.pathname.includes('index.html')) {
                 displayReplies(postId);
             } catch (error) {
                 console.error('Error deleting reply: ', error);
+            }
+        }
+    };
+
+    window.editPost = async function(postId, currentContent) {
+        const newContent = prompt('Edit your post:', currentContent);
+        if (newContent !== null && newContent.trim() !== '') {
+            try {
+                const postRef = doc(db, 'posts', postId);
+                await updateDoc(postRef, {
+                    content: newContent
+                });
+                displayPosts();
+            } catch (error) {
+                console.error('Error updating post: ', error);
+            }
+        }
+    };
+
+    window.deletePost = async function(postId) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            try {
+                await deleteDoc(doc(db, 'posts', postId));
+                displayPosts();
+            } catch (error) {
+                console.error('Error deleting post: ', error);
             }
         }
     };
