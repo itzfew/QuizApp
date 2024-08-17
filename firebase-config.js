@@ -1,8 +1,8 @@
-// firebase-config.js
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
   authDomain: "quizapp-1ae20.firebaseapp.com",
@@ -13,7 +13,9 @@ const firebaseConfig = {
   measurementId: "G-NKJTC5C1XW"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
 
-export const auth = firebase.auth();
-export const firestore = firebase.firestore();
+export { auth, firestore };
