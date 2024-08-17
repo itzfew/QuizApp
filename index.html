@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ind Edu - Quiz App</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ind Edu Quiz App</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>Ind Edu - Quiz App</h1>
-        <nav>
-            <button id="sign-in">Sign In</button>
-            <button id="sign-up">Sign Up</button>
-            <button id="view-profile">Profile</button>
-            <button id="settings">Settings</button>
-            <button id="sign-out" style="display:none;">Sign Out</button>
-        </nav>
-    </header>
-
-    <main>
-        <section id="poll-form" style="display:none;">
-            <h2>Create a Poll</h2>
-            <input type="text" id="poll-question" placeholder="Poll Question">
-            <textarea id="poll-options" placeholder="Options (comma separated)"></textarea>
-            <button id="submit-poll">Submit Poll</button>
-        </section>
-
-        <section id="poll-list">
-            <!-- Polls will be displayed here -->
-        </section>
-    </main>
-
-    <script type="module" src="app.js"></script>
+  <header>
+    <h1>Ind Edu Quiz App</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="settings.html">Settings</a>
+      <a href="profile.html" id="sign-out">Sign Out</a>
+    </nav>
+  </header>
+  <div class="container">
+    <div id="poll-form">
+      <h2>Create a Poll</h2>
+      <input type="text" id="poll-question" placeholder="Poll question">
+      <textarea id="poll-options" placeholder="Option 1\nOption 2\nOption 3"></textarea>
+      <button id="submit-poll">Submit Poll</button>
+    </div>
+    <div id="poll-list"></div>
+  </div>
 </body>
 </html>
