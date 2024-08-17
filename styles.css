@@ -1,40 +1,103 @@
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-h1, h2, h3 {
+    background-color: #f0f0f0;
     color: #333;
 }
 
-#auth-section, #user-info, #poll-form, #settings {
-    padding: 20px;
-    margin: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
 }
 
-#poll-form {
-    background-color: #f9f9f9;
+header h1 {
+    margin: 0;
 }
 
-.poll {
+nav button {
+    margin: 5px;
     padding: 10px;
-    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #0056b3;
+    cursor: pointer;
+}
+
+nav button:hover {
+    background-color: #004494;
+}
+
+main {
+    padding: 20px;
+}
+
+/* Poll Form Styles */
+#poll-form {
+    background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+#poll-question {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#poll-options {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#submit-poll {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+}
+
+#submit-poll:hover {
+    background-color: #218838;
+}
+
+/* Poll List Styles */
+.poll {
     background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.poll h3 {
+    margin: 0;
+    font-size: 18px;
 }
 
 .poll-options button {
-    margin: 5px;
+    display: block;
+    margin: 5px 0;
     padding: 10px;
+    border: none;
+    border-radius: 5px;
     background-color: #007bff;
     color: #fff;
-    border: none;
-    border-radius: 4px;
     cursor: pointer;
 }
 
@@ -43,26 +106,32 @@ h1, h2, h3 {
 }
 
 .progress-bar {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .progress-option {
     display: flex;
     align-items: center;
-    margin: 5px 0;
+    margin-bottom: 10px;
 }
 
 .progress-bar-inner {
     height: 20px;
     background-color: #007bff;
     margin: 0 10px;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
-.progress-option span {
+.settings {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+#theme-select, #font-size {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     margin-right: 10px;
-}
-
-#settings {
-    background-color: #f9f9f9;
 }
