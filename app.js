@@ -1,6 +1,6 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
@@ -87,12 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         pollForm.style.display = 'none';
         signOutButton.style.display = 'none';
-        const pollButtons = document.querySelectorAll('.poll-button');
-        pollButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            window.location.href = 'profile.html'; // Redirect to login/signup page
-          });
-        });
       }
     });
 
@@ -103,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!user) {
         alert('You must be logged in to create a poll.');
-        window.location.href = 'profile.html'; // Redirect to login/signup page
         return;
       }
 
@@ -169,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const option = event.target.dataset.option;
 
           if (!auth.currentUser) {
-            window.location.href = 'profile.html'; // Redirect to login/signup page
+            alert('You must be logged in to vote.');
             return;
           }
 
