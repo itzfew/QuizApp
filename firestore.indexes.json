@@ -1,0 +1,36 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "polls",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "timestamp", "mode": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "polls",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid", "mode": "ASCENDING" },
+        { "fieldPath": "timestamp", "mode": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pollResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "pollId", "mode": "ASCENDING" },
+        { "fieldPath": "uid", "mode": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pollResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "pollId", "mode": "ASCENDING" },
+        { "fieldPath": "timestamp", "mode": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
