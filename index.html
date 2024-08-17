@@ -3,34 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polls</title>
+    <title>Polls and Quiz App</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="scripts.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>Polls</h1>
-        <nav>
-            <a href="profile.html">Profile</a>
-            <a href="settings.html">Settings</a>
-            <button id="sign-out">Sign Out</button>
-        </nav>
-    </header>
-    <main>
-        <section id="poll-form">
-            <h2>Create a Poll</h2>
-            <input type="text" id="poll-question" placeholder="Poll Question" />
-            <div id="poll-options">
-                <input type="text" class="poll-option" placeholder="Option 1" />
-                <input type="text" class="poll-option" placeholder="Option 2" />
-            </div>
-            <button id="add-option">Add Option</button>
-            <button id="submit-poll">Submit Poll</button>
-        </section>
-        <section id="poll-list">
-            <h2>Polls</h2>
-            <!-- Polls will be dynamically inserted here -->
-        </section>
-    </main>
+    <h1>Polls and Quiz App</h1>
+    
+    <div id="poll-form">
+        <h2>Create Poll</h2>
+        <input type="text" id="poll-question" placeholder="Poll Question">
+        <input type="text" id="poll-option1" placeholder="Option 1">
+        <input type="text" id="poll-option2" placeholder="Option 2">
+        <button onclick="createPoll()">Create Poll</button>
+    </div>
+    
+    <div id="polls-list">
+        <h2>Polls</h2>
+        <div id="polls"></div>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
