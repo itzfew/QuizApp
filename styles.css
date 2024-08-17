@@ -42,7 +42,7 @@ main {
     margin: 0 auto;
 }
 
-#exam-content {
+#exam-content, #create-exam, #manage-questions {
     background: #fff;
     padding: 1rem;
     border-radius: 8px;
@@ -50,7 +50,7 @@ main {
     margin-bottom: 2rem;
 }
 
-textarea {
+textarea, input[type="text"], input[type="number"] {
     width: 100%;
     padding: 0.5rem;
     margin-bottom: 1rem;
