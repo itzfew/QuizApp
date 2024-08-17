@@ -1,3 +1,4 @@
+/* Styles for admin and user pages */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -17,35 +18,21 @@ header {
     border-bottom: 1px solid #ddd;
 }
 
-header #logo {
-    width: 50px;
-    height: 50px;
-    vertical-align: middle;
-}
-
 header h1 {
     margin: 0;
-    font-size: 1.5rem;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-nav a, nav button {
+header button {
+    background-color: #f44336;
     color: #fff;
-    background-color: #1877F2;
-    padding: 0.5rem 1rem;
     border: none;
+    padding: 0.5rem 1rem;
     cursor: pointer;
-    text-decoration: none;
     border-radius: 4px;
 }
 
-nav a:hover, nav button:hover {
-    background-color: #165eab;
+header button:hover {
+    background-color: #d32f2f;
 }
 
 main {
@@ -54,7 +41,7 @@ main {
     margin: 0 auto;
 }
 
-#exam-title, #exam-description, textarea {
+input, textarea, select {
     width: 100%;
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -62,76 +49,34 @@ main {
     border-radius: 4px;
 }
 
-textarea {
-    height: 100px;
-}
-
-#submit-post, #create-exam-button {
+button {
     background-color: #1877F2;
     color: #fff;
     border: none;
+    padding: 0.5rem 1rem;
     cursor: pointer;
-    padding: 0.5rem;
     border-radius: 4px;
     font-size: 1rem;
 }
 
-#submit-post:hover, #create-exam-button:hover {
+button:hover {
     background-color: #165eab;
 }
 
-#exam-list, #exams-list {
-    margin-top: 2rem;
-}
-
-.exam, .post {
+.exam, .question {
     background-color: #fff;
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
-    position: relative;
     margin-bottom: 1rem;
 }
 
-.exam .actions, .post .actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+.question ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-.actions button {
-    background-color: #ddd;
-    color: #333;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-}
-
-.actions .edit-btn {
-    background-color: #ffcc00;
-}
-
-.actions .delete-btn {
-    background-color: #f44336;
-}
-
-.actions .share-btn {
-    background-color: #42b72a;
-}
-
-.actions button:hover {
-    opacity: 0.8;
-}
-
-#sign-out {
-    margin-top: 5px;
-    padding: 15px;
-    background-color: brown;
-}
-
-#admin-link {
-    display: none;
+.question ul li {
+    margin-bottom: 0.5rem;
 }
