@@ -8,15 +8,18 @@
 </head>
 <body>
     <div id="auth-section">
-        <!-- Authentication controls -->
+        <h1>Ind Edu</h1>
+        <button id="sign-in">Sign In</button>
+        <button id="sign-up">Sign Up</button>
+        <button id="view-profile">View Profile</button>
     </div>
 
-    <div id="user-info">
+    <div id="user-info" style="display:none;">
         <div id="username-display"></div>
         <button id="sign-out">Sign Out</button>
     </div>
 
-    <div id="poll-form">
+    <div id="poll-form" style="display:none;">
         <h2>Create a Poll</h2>
         <input type="text" id="poll-question" placeholder="Poll Question">
         <textarea id="poll-options" placeholder="Options (comma separated)"></textarea>
