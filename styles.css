@@ -2,32 +2,30 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    box-sizing: border-box;
 }
 
-#auth-section, #user-info {
+h1, h2, h3 {
+    color: #333;
+}
+
+#auth-section, #user-info, #poll-form, #settings {
     padding: 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 #poll-form {
-    margin: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: #f9f9f9;
 }
 
 .poll {
-    border: 1px solid #ddd;
-    border-radius: 4px;
     padding: 10px;
     margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     background-color: #fff;
-}
-
-.poll h3 {
-    margin-top: 0;
 }
 
 .poll-options button {
@@ -63,4 +61,8 @@ body {
 
 .progress-option span {
     margin-right: 10px;
+}
+
+#settings {
+    background-color: #f9f9f9;
 }
