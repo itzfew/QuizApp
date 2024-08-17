@@ -12,36 +12,13 @@
         <img src="logo.png" alt="Quiz App Logo" id="logo">
         <h1>Quiz App</h1>
         <nav>
-            <a href="index.html" id="home-link">Home</a>
-            <a href="admin.html" id="admin-link">Admin Dashboard</a>
             <a href="profile.html" id="profile-link">Profile</a>
-            <button id="sign-out" style="display: none;">Sign Out</button>
+            <a href="settings.html" id="settings-link">Settings</a>
+            <button id="sign-out">Sign Out</button>
         </nav>
     </header>
     <main>
-        <!-- Admin Page -->
-        <section id="admin-section" style="display: none;">
-            <h2>Admin Dashboard</h2>
-            <div id="create-exam">
-                <h3>Create New Exam</h3>
-                <input type="text" id="exam-title" placeholder="Exam Title" />
-                <textarea id="exam-description" placeholder="Exam Description"></textarea>
-                <button id="create-exam-button">Create Exam</button>
-            </div>
-            <div id="manage-exams">
-                <h3>Manage Exams</h3>
-                <div id="exam-list"></div>
-            </div>
-        </section>
-
-        <!-- Exam Page -->
-        <section id="exam-section" style="display: none;">
-            <div id="exam-details"></div>
-            <div id="questions-section"></div>
-        </section>
-        
-        <!-- Home Page -->
-        <section id="home-section">
+        <section id="exams">
             <h2>Available Exams</h2>
             <div id="exams-list"></div>
         </section>
