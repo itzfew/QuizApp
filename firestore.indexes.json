@@ -1,0 +1,16 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "posts",
+      "fields": [
+        { "fieldPath": "timestamp", "mode": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "replies",
+      "fields": [
+        { "fieldPath": "timestamp", "mode": "DESCENDING" }
+      ]
+    }
+  ]
+}
