@@ -13,89 +13,69 @@ const firebaseConfig = {
   appId: "1:626886802317:web:df08c307697ca235c45bc4",
   measurementId: "G-NKJTC5C1XW"
 };
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
-
-// Profile page logic
-if (window.location.pathname.includes('profile.html')) {
-    const authSection = document.getElementById('auth-section');
-    const userInfo = document.getElementById('user-info');
-    const usernameDisplay = document.getElementById('username-display');
-    const signOutButton = document.getElementById('sign-out');
-
-    signOutButton.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Error signing out: ', error);
-        }
-    });
-
-    document.getElementById('sign-in').addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
-
-    document.getElementById('sign-up').addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
-
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            authSection.style.display = 'none';
-            userInfo.style.display = 'block';
-            usernameDisplay.textContent = user.email.split('@')[0];
-        } else {
-            authSection.style.display = 'block';
-            userInfo.style.display = 'none';
-        }
-    });
-}
 
 // Main index page logic
 if (window.location.pathname.includes('index.html')) {
     const pollForm = document.getElementById('poll-form');
     const signOutButton = document.getElementById('sign-out');
     const pollList = document.getElementById('poll-list');
+    const signInButton = document.getElementById('sign-in');
+    const signUpButton = document.getElementById('sign-up');
+    const viewProfileButton = document.getElementById('view-profile');
+    const settingsButton = document.getElementById('settings');
 
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            pollForm.style.display = 'block';
-            signOutButton.style.display = 'inline';
-        } else {
-            pollForm.style.display = 'none';
-            signOutButton.style.display = 'none';
+    signInButton.addEventListener('click', () => {
+        window.location.href = 'profile.html';
+    });
+
+    signUpButton.addEventListener('click', () => {
+        window.location.href = 'profile.html';
+    });
+
+    settingsButton.addEventListener('click', () => {
+        window.location.href = 'settings.html';
+    });
+
+    viewProfileButton.addEventListener('click', () => {
+        window.location.href = 'profile.html';
+    });
+
+    signOutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            window.location.href = 'profile.html';
+        } catch (error) {
+            console.error('Error signing out: ', error);
         }
     });
 
     document.getElementById('submit-poll').addEventListener('click', async () => {
         const question = document.getElementById('poll-question').value;
         const options = document.getElementById('poll-options').value.split(',').map(opt => opt.trim());
+
         if (question.trim() === '' || options.length === 0) {
-            alert('Poll question and options cannot be empty.');
+            alert('Please enter a question and options.');
             return;
         }
 
-        if (auth.currentUser) {
-            try {
-                await addDoc(collection(db, 'polls'), {
-                    question: question,
-                    options: options,
-                    timestamp: serverTimestamp(),
-                    uid: auth.currentUser.uid,
-                    votes: Array(options.length).fill(0) // Initialize votes count for each option
-                });
-                document.getElementById('poll-question').value = '';
-                document.getElementById('poll-options').value = '';
-                displayPolls();
-                alert('Poll created successfully!');
-            } catch (error) {
-                console.error('Error creating poll: ', error);
-            }
-        } else {
-            alert('You must be logged in to create a poll.');
+        try {
+            await addDoc(collection(db, 'polls'), {
+                question: question,
+                options: options,
+                votes: Array(options.length).fill(0),
+                timestamp: new Date()
+            });
+            document.getElementById('poll-question').value = '';
+            document.getElementById('poll-options').value = '';
+            displayPolls();
+            alert('Poll added successfully!');
+        } catch (error) {
+            console.error('Error adding poll: ', error);
         }
     });
 
@@ -103,25 +83,27 @@ if (window.location.pathname.includes('index.html')) {
         pollList.innerHTML = '';
         try {
             const q = query(collection(db, 'polls'), orderBy('timestamp', 'desc'));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach(doc => {
-                const poll = doc.data();
-                const pollDiv = document.createElement('div');
-                pollDiv.classList.add('poll');
-                const pollId = doc.id;
+            onSnapshot(q, (querySnapshot) => {
+                pollList.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const poll = doc.data();
+                    const pollId = doc.id;
+                    const pollDiv = document.createElement('div');
+                    pollDiv.classList.add('poll');
 
-                pollDiv.innerHTML = `
-                    <h3>${poll.question}</h3>
-                    <div class="poll-options">
-                        ${poll.options.map((option, index) => `
-                            <button onclick="vote('${pollId}', ${index})">${option}</button>
-                        `).join('')}
-                    </div>
-                    <div id="progress-${pollId}" class="progress-bar"></div>
-                `;
+                    pollDiv.innerHTML = `
+                        <h3>${poll.question}</h3>
+                        <div class="poll-options">
+                            ${poll.options.map((option, index) => `
+                                <button onclick="vote('${pollId}', ${index})">${option}</button>
+                            `).join('')}
+                        </div>
+                        <div id="progress-${pollId}" class="progress-bar"></div>
+                    `;
 
-                pollList.appendChild(pollDiv);
-                updateProgressBar(pollId, poll.options, poll.votes);
+                    pollList.appendChild(pollDiv);
+                    updateProgressBar(pollId, poll.options, poll.votes);
+                });
             });
         } catch (error) {
             console.error('Error getting polls: ', error);
@@ -131,6 +113,7 @@ if (window.location.pathname.includes('index.html')) {
     window.vote = async function(pollId, optionIndex) {
         if (!auth.currentUser) {
             alert('You must be logged in to vote.');
+            window.location.href = 'profile.html';
             return;
         }
 
@@ -167,6 +150,33 @@ if (window.location.pathname.includes('index.html')) {
     }
 
     displayPolls();
+}
+
+// Profile page logic
+if (window.location.pathname.includes('profile.html')) {
+    const userInfo = document.getElementById('user-info');
+    const usernameDisplay = document.getElementById('username-display');
+    const signOutButton = document.getElementById('sign-out');
+
+    signOutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Error signing out: ', error);
+        }
+    });
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            userInfo.style.display = 'block';
+            usernameDisplay.textContent = `Welcome, ${user.email.split('@')[0]}`;
+        } else {
+            userInfo.style.display = 'none';
+            alert('You are not logged in. Redirecting to sign in page.');
+            window.location.href = 'index.html';
+        }
+    });
 }
 
 // Settings page logic
