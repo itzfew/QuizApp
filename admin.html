@@ -24,6 +24,16 @@
             <h2>Manage Exams</h2>
             <div id="exams"></div>
         </section>
+        <section id="manage-questions" style="display: none;">
+            <h2>Manage Questions</h2>
+            <input type="text" id="question-text" placeholder="Question Text">
+            <input type="text" id="option-1" placeholder="Option 1">
+            <input type="text" id="option-2" placeholder="Option 2">
+            <input type="text" id="option-3" placeholder="Option 3">
+            <input type="text" id="option-4" placeholder="Option 4">
+            <input type="number" id="correct-option" placeholder="Correct Option (0-3)">
+            <button id="add-question">Add Question</button>
+        </section>
     </main>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
