@@ -32,10 +32,6 @@ section {
     margin-bottom: 2rem;
 }
 
-#quizList, #pollList {
-    margin-top: 1rem;
-}
-
 .quiz-item, .poll-item {
     padding: 1rem;
     border: 1px solid #ddd;
@@ -45,4 +41,19 @@ section {
 
 .correct-option {
     color: green;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar span {
+    display: block;
+    height: 1rem;
+    background-color: #4CAF50;
+    width: 0;
 }
