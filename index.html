@@ -3,25 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz App</title>
-    <link rel="stylesheet" href="styles.css">
-    <script type="module" src="scripts.js" defer></script>
+    <title>Online Quiz</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
-    <header>
-        <img src="logo.png" alt="Quiz App Logo" id="logo">
-        <h1>Quiz App</h1>
-        <nav>
-            <a href="profile.html" id="profile-link">Profile</a>
-            <a href="settings.html" id="settings-link">Settings</a>
-            <button id="sign-out">Sign Out</button>
-        </nav>
-    </header>
-    <main>
-        <section id="exams">
-            <h2>Available Exams</h2>
-            <div id="exams-list"></div>
-        </section>
-    </main>
+    <div id="quiz-container">
+        <h1>Online Quiz</h1>
+        <div id="quiz"></div>
+        <button id="submit">Submit</button>
+        <div id="result"></div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script>
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadQuiz();
+            document.getElementById('submit').addEventListener('click', submitQuiz);
+        });
+
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            db.collection('quizzes').doc('quiz1').get().then((doc) => {
+                if (doc.exists) {
+                    const quizData = doc.data();
+                    let output = '';
+                    quizData.questions.forEach((question, index) => {
+                        output += `<div class="question">
+                            <h2>${question.text}</h2>
+                            ${question.options.map((option, i) => `
+                                <label>
+                                    <input type="radio" name="q${index}" value="${i}">
+                                    ${option}
+                                </label><br>
+                            `).join('')}
+                        </div>`;
+                    });
+                    quizContainer.innerHTML = output;
+                } else {
+                    quizContainer.innerHTML = 'No quiz data found.';
+                }
+            });
+        }
+
+        function submitQuiz() {
+            const answers = Array.from(document.querySelectorAll('#quiz .question')).map((questionElem, index) => {
+                const selectedOption = questionElem.querySelector(`input[name="q${index}"]:checked`);
+                return selectedOption ? parseInt(selectedOption.value) : null;
+            });
+
+            if (answers.includes(null)) {
+                alert('Please answer all questions before submitting.');
+                return;
+            }
+
+            db.collection('quizzes').doc('quiz1').get().then((doc) => {
+                if (doc.exists) {
+                    const quizData = doc.data();
+                    const correctAnswers = quizData.questions.map(q => q.correct);
+                    let score = 0;
+
+                    answers.forEach((answer, index) => {
+                        if (answer === correctAnswers[index]) score++;
+                    });
+
+                    const userName = prompt('Enter your name:');
+                    const userEmail = prompt('Enter your email:');
+
+                    if (!userName || !userEmail) {
+                        alert('Name and email are required.');
+                        return;
+                    }
+
+                    db.collection('results').add({
+                        name: userName,
+                        email: userEmail,
+                        score: score,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        document.getElementById('result').innerHTML = `Your score is ${score}/${correctAnswers.length}`;
+                    }).catch((error) => {
+                        console.error('Error saving result: ', error);
+                        document.getElementById('result').innerHTML = 'There was an error saving your result.';
+                    });
+
+                } else {
+                    document.getElementById('result').innerHTML = 'Quiz not found.';
+                }
+            }).catch((error) => {
+                console.error('Error loading quiz: ', error);
+                document.getElementById('result').innerHTML = 'There was an error loading the quiz.';
+            });
+        }
+    </script>
 </body>
 </html>
