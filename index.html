@@ -4,69 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz App</title>
-    <style>
-      body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.admin-panel, .user-panel, .quiz-taking-panel {
-    width: 80%;
-    max-width: 600px;
-    margin: 20px auto;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-button {
-    padding: 10px 20px;
-    border: none;
-    background-color: #007BFF;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-  </style>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-    <script defer src="app.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="admin-panel" class="admin-panel">
-        <h2>Admin Panel</h2>
-        <form id="quiz-form">
-            <input type="text" id="quiz-title" placeholder="Quiz Title" required>
-            <textarea id="quiz-description" placeholder="Quiz Description"></textarea>
-            <div id="questions-container"></div>
-            <button type="button" onclick="addQuestion()">Add Question</button>
-            <button type="submit">Submit Quiz</button>
-        </form>
+    <div class="container">
+        <h1>Welcome to the Quiz App</h1>
+        <button id="startQuizButton">Start Quiz</button>
     </div>
-
-    <div id="user-panel" class="user-panel">
-        <h2>Take Quiz</h2>
-        <div id="quizzes-list"></div>
-    </div>
-
-    <div id="quiz-taking-panel" class="quiz-taking-panel" style="display: none;">
-        <h2 id="quiz-title-display"></h2>
-        <div id="questions-display"></div>
-        <button id="submit-quiz">Submit Quiz</button>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
