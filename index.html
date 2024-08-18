@@ -3,100 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Quiz</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <title>Quiz App</title>
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.admin-panel, .user-panel, .quiz-taking-panel {
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+  </style>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+    <script defer src="app.js"></script>
 </head>
 <body>
-    <div id="quiz-container">
-        <h1>Online Quiz</h1>
-        <div id="quiz"></div>
-        <button id="submit">Submit</button>
-        <div id="result"></div>
+    <div id="admin-panel" class="admin-panel">
+        <h2>Admin Panel</h2>
+        <form id="quiz-form">
+            <input type="text" id="quiz-title" placeholder="Quiz Title" required>
+            <textarea id="quiz-description" placeholder="Quiz Description"></textarea>
+            <div id="questions-container"></div>
+            <button type="button" onclick="addQuestion()">Add Question</button>
+            <button type="submit">Submit Quiz</button>
+        </form>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-    <script src="../js/firebase-config.js"></script>
-    <script>
-        const db = firebase.firestore();
 
-        document.addEventListener('DOMContentLoaded', function () {
-            loadQuiz();
-            document.getElementById('submit').addEventListener('click', submitQuiz);
-        });
+    <div id="user-panel" class="user-panel">
+        <h2>Take Quiz</h2>
+        <div id="quizzes-list"></div>
+    </div>
 
-        function loadQuiz() {
-            const quizContainer = document.getElementById('quiz');
-            db.collection('quizzes').doc('quiz1').get().then((doc) => {
-                if (doc.exists) {
-                    const quizData = doc.data();
-                    let output = '';
-                    quizData.questions.forEach((question, index) => {
-                        output += `<div class="question">
-                            <h2>${question.text}</h2>
-                            ${question.options.map((option, i) => `
-                                <label>
-                                    <input type="radio" name="q${index}" value="${i}">
-                                    ${option}
-                                </label><br>
-                            `).join('')}
-                        </div>`;
-                    });
-                    quizContainer.innerHTML = output;
-                } else {
-                    quizContainer.innerHTML = 'No quiz data found.';
-                }
-            });
-        }
-
-        function submitQuiz() {
-            const answers = Array.from(document.querySelectorAll('#quiz .question')).map((questionElem, index) => {
-                const selectedOption = questionElem.querySelector(`input[name="q${index}"]:checked`);
-                return selectedOption ? parseInt(selectedOption.value) : null;
-            });
-
-            if (answers.includes(null)) {
-                alert('Please answer all questions before submitting.');
-                return;
-            }
-
-            db.collection('quizzes').doc('quiz1').get().then((doc) => {
-                if (doc.exists) {
-                    const quizData = doc.data();
-                    const correctAnswers = quizData.questions.map(q => q.correct);
-                    let score = 0;
-
-                    answers.forEach((answer, index) => {
-                        if (answer === correctAnswers[index]) score++;
-                    });
-
-                    const userName = prompt('Enter your name:');
-                    const userEmail = prompt('Enter your email:');
-
-                    if (!userName || !userEmail) {
-                        alert('Name and email are required.');
-                        return;
-                    }
-
-                    db.collection('results').add({
-                        name: userName,
-                        email: userEmail,
-                        score: score,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => {
-                        document.getElementById('result').innerHTML = `Your score is ${score}/${correctAnswers.length}`;
-                    }).catch((error) => {
-                        console.error('Error saving result: ', error);
-                        document.getElementById('result').innerHTML = 'There was an error saving your result.';
-                    });
-
-                } else {
-                    document.getElementById('result').innerHTML = 'Quiz not found.';
-                }
-            }).catch((error) => {
-                console.error('Error loading quiz: ', error);
-                document.getElementById('result').innerHTML = 'There was an error loading the quiz.';
-            });
-        }
-    </script>
+    <div id="quiz-taking-panel" class="quiz-taking-panel" style="display: none;">
+        <h2 id="quiz-title-display"></h2>
+        <div id="questions-display"></div>
+        <button id="submit-quiz">Submit Quiz</button>
+    </div>
 </body>
 </html>
