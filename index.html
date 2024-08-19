@@ -31,9 +31,23 @@
     
     <div id="admin-dashboard" style="display:none;">
         <h1>Admin Dashboard</h1>
-        <button id="view-results">View Results</button>
         <div id="admin-results"></div>
+        <h2>Add Question</h2>
+        <input type="text" id="question-text" placeholder="Question">
+        <input type="text" id="option1" placeholder="Option 1">
+        <input type="text" id="option2" placeholder="Option 2">
+        <input type="text" id="option3" placeholder="Option 3">
+        <input type="text" id="option4" placeholder="Option 4">
+        <input type="text" id="correct-answer" placeholder="Correct Answer">
+        <button id="add-question-btn">Add Question</button>
     </div>
+
+    <div id="view-results" style="display:none;">
+        <h2>View Results</h2>
+        <div id="user-results"></div>
+    </div>
+    
+    <button id="logout-btn">Logout</button>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js"></script>
