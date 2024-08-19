@@ -8,7 +8,8 @@ body {
 }
 
 /* Container Styles */
-#auth-container, #quiz-container, #result-container, #admin-dashboard, #view-results {
+#auth-container, #quiz-container, #result-container, #admin-dashboard,
+{
     padding: 20px;
     margin: 20px auto;
     max-width: 900px;
