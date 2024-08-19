@@ -4,135 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 80%;
-            max-width: 600px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-        input {
-            margin-bottom: 10px;
-            padding: 5px;
-            width: 100%;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <h1>Admin Dashboard</h1>
     <form id="exam-form">
-        <label for="examName">Exam Name:</label>
-        <input type="text" id="examName" required>
-        <br>
-        <label for="questionText">Question:</label>
-        <input type="text" id="questionText" required>
-        <br>
-        <label for="option1">Option 1:</label>
-        <input type="text" id="option1" required>
-        <br>
-        <label for="option2">Option 2:</label>
-        <input type="text" id="option2" required>
-        <br>
-        <label for="option3">Option 3:</label>
-        <input type="text" id="option3" required>
-        <br>
-        <label for="correctOption">Correct Option (1, 2, or 3):</label>
-        <input type="number" id="correctOption" min="1" max="3" required>
-        <br>
-        <button type="submit">Add Question</button>
-        <div class="error" id="error-message"></div>
+        <input type="text" id="exam-title" placeholder="Exam Title" required>
+        <div id="questions-container">
+            <!-- Questions will be dynamically added here -->
+        </div>
+        <button type="button" id="add-question">Add Question</button>
+        <button type="submit">Save Exam</button>
     </form>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
-            authDomain: "quizapp-1ae20.firebaseapp.com",
-            projectId: "quizapp-1ae20",
-            storageBucket: "quizapp-1ae20.appspot.com",
-            messagingSenderId: "626886802317",
-            appId: "1:626886802317:web:df08c307697ca235c45bc4",
-            measurementId: "G-NKJTC5C1XW"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        document.getElementById('exam-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const examName = document.getElementById('examName').value;
-            const questionText = document.getElementById('questionText').value;
-            const options = [
-                document.getElementById('option1').value,
-                document.getElementById('option2').value,
-                document.getElementById('option3').value
-            ];
-            const correctOption = parseInt(document.getElementById('correctOption').value) - 1;
-
-            if (isNaN(correctOption) || correctOption < 0 || correctOption > 2) {
-                document.getElementById('error-message').textContent = 'Invalid correct option.';
-                return;
-            }
-
-            const quizData = {
-                questions: [
-                    {
-                        text: questionText,
-                        options: options,
-                        correct: correctOption
-                    }
-                ]
-            };
-
-            db.collection('quizzes').doc(examName).get().then((doc) => {
-                if (doc.exists) {
-                    db.collection('quizzes').doc(examName).update({
-                        questions: firebase.firestore.FieldValue.arrayUnion(quizData.questions[0])
-                    }).then(() => {
-                        alert('Question added to existing exam.');
-                        document.getElementById('exam-form').reset();
-                    }).catch((error) => {
-                        console.error('Error updating document: ', error);
-                    });
-                } else {
-                    db.collection('quizzes').doc(examName).set(quizData).then(() => {
-                        alert('New exam created with question.');
-                        document.getElementById('exam-form').reset();
-                    }).catch((error) => {
-                        console.error('Error adding document: ', error);
-                    });
-                }
-            });
-        });
-    </script>
+    <script src="js/admin.js"></script>
 </body>
 </html>
