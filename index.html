@@ -68,6 +68,12 @@
         .exam-item button:hover, .question-item button:hover {
             background-color: #c82333;
         }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
     </style>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
@@ -86,7 +92,7 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -100,11 +106,23 @@
             const examList = document.getElementById('exam-list');
             const questionList = document.getElementById('question-list');
             const examSelect = document.getElementById('exam-select');
-
-            // Authentication
             const authForm = document.getElementById('auth-form');
             const signupButton = document.getElementById('signup-button');
+            const errorContainer = document.getElementById('error-container');
 
+            // Check auth state
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    authContainer.classList.add('hidden');
+                    examContainer.classList.remove('hidden');
+                    loadExams();
+                } else {
+                    authContainer.classList.remove('hidden');
+                    examContainer.classList.add('hidden');
+                }
+            });
+
+            // Authentication
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('email').value;
@@ -112,11 +130,8 @@
 
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
-                    authContainer.classList.add('hidden');
-                    examContainer.classList.remove('hidden');
-                    loadExams();
                 } catch (error) {
-                    console.error('Error signing in:', error);
+                    errorContainer.textContent = 'Error signing in: ' + error.message;
                 }
             });
 
@@ -128,7 +143,7 @@
                     await auth.createUserWithEmailAndPassword(email, password);
                     alert('Account created successfully!');
                 } catch (error) {
-                    console.error('Error signing up:', error);
+                    errorContainer.textContent = 'Error signing up: ' + error.message;
                 }
             });
 
@@ -146,7 +161,7 @@
                     document.getElementById('exam-title').value = '';
                     loadExams();
                 } catch (error) {
-                    console.error('Error adding exam:', error);
+                    errorContainer.textContent = 'Error adding exam: ' + error.message;
                 }
             });
 
@@ -184,7 +199,7 @@
                             });
                             loadExams();
                         } catch (error) {
-                            console.error('Error deleting exam:', error);
+                            errorContainer.textContent = 'Error deleting exam: ' + error.message;
                         }
                     });
                 });
@@ -228,7 +243,7 @@
                     document.getElementById('correct-option').value = '';
                     loadQuestions(examId);
                 } catch (error) {
-                    console.error('Error adding question:', error);
+                    errorContainer.textContent = 'Error adding question: ' + error.message;
                 }
             });
 
@@ -257,7 +272,7 @@
                             await db.collection('questions').doc(questionId).delete();
                             loadQuestions(examId);
                         } catch (error) {
-                            console.error('Error deleting question:', error);
+                            errorContainer.textContent = 'Error deleting question: ' + error.message;
                         }
                     });
                 });
@@ -267,6 +282,7 @@
 </head>
 <body>
     <div class="container">
+        <div id="error-container" class="error"></div>
         <div id="auth-container">
             <h1>Online Exam Conductor</h1>
             <h2 id="auth-title">Login</h2>
