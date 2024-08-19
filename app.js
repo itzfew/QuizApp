@@ -3,6 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebas
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
 
 import { getFirestore, collection, getDocs, addDoc, serverTimestamp, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
+import { sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
 
 // Firebase configuration
 
@@ -510,5 +511,16 @@ document.getElementById('add-question-btn').addEventListener('click', async () =
         alert('Please fill all fields correctly.');
 
     }
+  
+      });
+document.getElementById('reset-password-btn').addEventListener('click', () => {
+    const email = document.getElementById('reset-email').value;
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            alert('Password reset email sent!');
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
 
-});
+    });
