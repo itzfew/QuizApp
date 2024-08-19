@@ -3,17 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz App</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Online Exam Conductor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        input, button, select, textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .exam-item, .question-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .exam-item button, .question-item button {
+            background-color: #dc3545;
+            border: none;
+            cursor: pointer;
+        }
+
+        .exam-item button:hover, .question-item button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
+            authDomain: "quizapp-1ae20.firebaseapp.com",
+            projectId: "quizapp-1ae20",
+            storageBucket: "quizapp-1ae20.appspot.com",
+            messagingSenderId: "626886802317",
+            appId: "1:626886802317:web:df08c307697ca235c45bc4",
+            measurementId: "G-NKJTC5C1XW"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const authContainer = document.getElementById('auth-container');
+            const examContainer = document.getElementById('exam-container');
+            const createExamContainer = document.getElementById('create-exam-container');
+            const questionContainer = document.getElementById('question-container');
+            const examForm = document.getElementById('exam-form');
+            const questionForm = document.getElementById('question-form');
+            const examList = document.getElementById('exam-list');
+            const questionList = document.getElementById('question-list');
+            const examSelect = document.getElementById('exam-select');
+
+            // Authentication
+            const authForm = document.getElementById('auth-form');
+            const signupButton = document.getElementById('signup-button');
+
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    authContainer.classList.add('hidden');
+                    examContainer.classList.remove('hidden');
+                    loadExams();
+                } catch (error) {
+                    console.error('Error signing in:', error);
+                }
+            });
+
+            signupButton.addEventListener('click', async () => {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    alert('Account created successfully!');
+                } catch (error) {
+                    console.error('Error signing up:', error);
+                }
+            });
+
+            // Exam Management
+            examForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('exam-title').value;
+
+                try {
+                    await db.collection('exams').add({
+                        title,
+                        userId: auth.currentUser.uid,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    document.getElementById('exam-title').value = '';
+                    loadExams();
+                } catch (error) {
+                    console.error('Error adding exam:', error);
+                }
+            });
+
+            async function loadExams() {
+                const snapshot = await db.collection('exams').where('userId', '==', auth.currentUser.uid).orderBy('timestamp', 'desc').get();
+                examList.innerHTML = '';
+                examSelect.innerHTML = '<option value="">Select Exam</option>'; // Clear previous options
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const examItem = document.createElement('li');
+                    examItem.classList.add('exam-item');
+                    examItem.innerHTML = `
+                        <h3>${data.title}</h3>
+                        <button data-id="${doc.id}" class="delete-exam-button">Delete Exam</button>
+                    `;
+                    examList.appendChild(examItem);
+
+                    // Add to select options
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = data.title;
+                    examSelect.appendChild(option);
+                });
+
+                document.querySelectorAll('.delete-exam-button').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const examId = e.target.getAttribute('data-id');
+                        try {
+                            await db.collection('exams').doc(examId).delete();
+                            await db.collection('questions').where('examId', '==', examId).get().then(snapshot => {
+                                snapshot.forEach(doc => {
+                                    doc.ref.delete();
+                                });
+                            });
+                            loadExams();
+                        } catch (error) {
+                            console.error('Error deleting exam:', error);
+                        }
+                    });
+                });
+            }
+
+            // Question Management
+            examSelect.addEventListener('change', async (e) => {
+                const examId = e.target.value;
+                if (examId) {
+                    createExamContainer.classList.add('hidden');
+                    questionContainer.classList.remove('hidden');
+                    loadQuestions(examId);
+                }
+            });
+
+            questionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const examId = examSelect.value;
+                const questionText = document.getElementById('question-text').value;
+                const options = [
+                    document.getElementById('option1').value,
+                    document.getElementById('option2').value,
+                    document.getElementById('option3').value,
+                    document.getElementById('option4').value
+                ];
+                const correctOption = document.getElementById('correct-option').value;
+
+                try {
+                    await db.collection('questions').add({
+                        examId,
+                        questionText,
+                        options,
+                        correctOption,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    document.getElementById('question-text').value = '';
+                    document.getElementById('option1').value = '';
+                    document.getElementById('option2').value = '';
+                    document.getElementById('option3').value = '';
+                    document.getElementById('option4').value = '';
+                    document.getElementById('correct-option').value = '';
+                    loadQuestions(examId);
+                } catch (error) {
+                    console.error('Error adding question:', error);
+                }
+            });
+
+            async function loadQuestions(examId) {
+                const snapshot = await db.collection('questions').where('examId', '==', examId).orderBy('timestamp', 'desc').get();
+                questionList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const questionItem = document.createElement('li');
+                    questionItem.classList.add('question-item');
+                    questionItem.innerHTML = `
+                        <h3>${data.questionText}</h3>
+                        <ul>
+                            ${data.options.map((option, index) => `<li>${index + 1}. ${option}</li>`).join('')}
+                        </ul>
+                        <p><strong>Correct Option:</strong> ${data.correctOption}</p>
+                        <button data-id="${doc.id}" class="delete-question-button">Delete Question</button>
+                    `;
+                    questionList.appendChild(questionItem);
+                });
+
+                document.querySelectorAll('.delete-question-button').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const questionId = e.target.getAttribute('data-id');
+                        try {
+                            await db.collection('questions').doc(questionId).delete();
+                            loadQuestions(examId);
+                        } catch (error) {
+                            console.error('Error deleting question:', error);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to the Quiz App</h1>
-        <button id="startQuizButton">Start Quiz</button>
+        <div id="auth-container">
+            <h1>Online Exam Conductor</h1>
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" id="auth-button">Login</button>
+            </form>
+            <button id="signup-button">Sign Up</button>
+        </div>
+        <div id="exam-container" class="hidden">
+            <h2>Create Exam</h2>
+            <form id="exam-form">
+                <input type="text" id="exam-title" placeholder="Exam Title" required>
+                <button type="submit" id="add-exam-button">Add Exam</button>
+            </form>
+            <div id="create-exam-container">
+                <h2>Manage Questions</h2>
+                <form id="question-form">
+                    <select id="exam-select" required>
+                        <option value="">Select Exam</option>
+                    </select>
+                    <input type="text" id="question-text" placeholder="Question Text" required>
+                    <input type="text" id="option1" placeholder="Option 1" required>
+                    <input type="text" id="option2" placeholder="Option 2" required>
+                    <input type="text" id="option3" placeholder="Option 3">
+                    <input type="text" id="option4" placeholder="Option 4">
+                    <input type="number" id="correct-option" placeholder="Correct Option (1-4)" required>
+                    <button type="submit" id="add-question-button">Add Question</button>
+                </form>
+                <ul id="question-list"></ul>
+            </div>
+            <h2>Exams</h2>
+            <ul id="exam-list"></ul>
+        </div>
+        <div id="question-container" class="hidden">
+            <h2>Exam Questions</h2>
+            <ul id="question-list"></ul>
+        </div>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-    <script src="firebase.js"></script>
-    <script src="script.js"></script>
 </body>
 </html>
