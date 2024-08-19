@@ -118,7 +118,7 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 
 function handleUserRedirect(user) {
 
-    if (user.email === 'waheedchalla@gmail.com') {
+    if (user.email === 'challawaheed@gmail.com') {
 
         document.getElementById('admin-dashboard').style.display = 'block';
 
