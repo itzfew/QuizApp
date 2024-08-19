@@ -1,38 +1,39 @@
-// admin.js
-import { db } from './firebase-config.js';
-import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-// Handle form submission
-document.getElementById('quizForm').addEventListener('submit', function(event) {
-  event.preventDefault();
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
+  authDomain: "quizapp-1ae20.firebaseapp.com",
+  projectId: "quizapp-1ae20",
+  storageBucket: "quizapp-1ae20.appspot.com",
+  messagingSenderId: "626886802317",
+  appId: "1:626886802317:web:df08c307697ca235c45bc4",
+  measurementId: "G-NKJTC5C1XW"
+};
 
-  const title = document.getElementById('quizTitle').value;
-  const question1 = document.getElementById('question1').value;
-  const options1 = document.getElementById('options1').value.split(',');
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  const questions = [
-    {
-      question: question1,
-      options: options1
-    }
-    // Add more questions if needed
-  ];
+window.addEventListener('load', async () => {
+    const examContainer = document.getElementById('exam-container');
+    const querySnapshot = await getDocs(collection(db, "exams"));
 
-  addQuiz(title, questions);
+    querySnapshot.forEach((doc) => {
+        const examData = doc.data();
+        const examElement = document.createElement('div');
+        examElement.innerHTML = `<h2>${examData.title}</h2>`;
+        examData.questions.forEach((question, index) => {
+            examElement.innerHTML += `<p>${index + 1}. ${question.text}</p>`;
+            question.options.forEach(option => {
+                examElement.innerHTML += `<input type="radio" name="q${index}" value="${option}"> ${option}<br>`;
+            });
+        });
+        examContainer.appendChild(examElement);
+    });
+
+    document.getElementById('submit-exam').addEventListener('click', async () => {
+        // Collect user responses and handle submission logic
+        // e.g., submitAnswersToServer(userAnswers);
+    });
 });
-
-// Add quiz to Firestore
-function addQuiz(title, questions) {
-  addDoc(collection(db, 'quizzes'), {
-    title: title,
-    questions: questions
-  })
-  .then((docRef) => {
-    console.log('Quiz added with ID:', docRef.id);
-    alert('Quiz added successfully!');
-  })
-  .catch((error) => {
-    console.error('Error adding quiz:', error.message);
-    alert(`Failed to add quiz: ${error.message}`);
-  });
-}
