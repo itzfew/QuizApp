@@ -2,161 +2,72 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
-    color: #333;
-}
-
-header {
-    background-color: #4267B2;
-    color: #fff;
-    padding: 1rem;
+    background-color: #f4f4f4;
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #ddd;
 }
 
-header #logo {
-    width: 50px;
-    height: 50px;
-    vertical-align: middle;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-nav {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-nav a, nav button {
-    color: #fff;
-    background-color: #1877F2;
-    padding: 0.5rem 1rem;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    border-radius: 4px;
-}
-
-nav a:hover, nav button:hover {
-    background-color: #165eab;
-}
-
-main {
-    padding: 1rem;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-#post-form, #create-exam, #add-question {
-    background: #fff;
-    padding: 1rem;
+#auth-container, #quiz-container, #result-container, #admin-dashboard {
+    margin: 20px;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-input, textarea {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
+input {
+    margin: 10px 0;
+    padding: 10px;
+    width: 200px;
     border: 1px solid #ddd;
     border-radius: 4px;
-}
-
-textarea {
-    height: 100px;
 }
 
 button {
-    background-color: #1877F2;
-    color: #fff;
+    padding: 10px 20px;
     border: none;
-    cursor: pointer;
-    padding: 0.5rem;
     border-radius: 4px;
-    font-size: 1rem;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    margin: 5px;
 }
 
 button:hover {
-    background-color: #165eab;
-}
-
-#exams {
-    margin-top: 2rem;
-}
-
-#exams-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.exam {
-    background-color: #fff;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
-    position: relative;
-}
-
-.exam h3 {
-    margin: 0;
-}
-
-.exam button {
-    background-color: #28a745;
-    margin-top: 0.5rem;
-}
-
-.exam button:hover {
-    background-color: #218838;
-}
-
-.auth-button {
-    font-size: 1.2rem;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 1rem 2rem;
-    cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s;
-    display: inline-block;
-    text-align: center;
-    text-decoration: none;
-    margin: 0.5rem;
-    width: 200px;
-}
-
-#sign-in {
-    background-color: #007bff;
-}
-
-#sign-in:hover {
     background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-#sign-up {
-    background-color: #28a745;
+.option {
+    cursor: pointer;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-#sign-up:hover {
-    background-color: #218838;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.option.selected {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
 }
 
-#sign-out {
-    background-color: #f44336;
+.option.correct {
+    background-color: #c3e6cb;
 }
 
-#sign-out:hover {
-    background-color: #c62828;
+.option.incorrect {
+    background-color: #f8d7da;
+}
+
+.result-item {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.correct {
+    background-color: #c3e6cb;
+}
+
+.incorrect {
+    background-color: #f8d7da;
 }
