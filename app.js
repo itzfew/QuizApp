@@ -1,4 +1,3 @@
-// app.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
 import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
@@ -18,7 +17,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Initialize quiz state
 let quizData = [];
 let userAnswers = {};
 let currentQuestionIndex = 0;
@@ -44,7 +42,12 @@ document.getElementById('register-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     createUserWithEmailAndPassword(auth, email, password)
-        .then(() => {
+        .then(async userCredential => {
+            const user = userCredential.user;
+            await addDoc(collection(db, 'users'), {
+                email: user.email,
+                name: prompt('Please enter your name:')
+            });
             alert('Registration successful! Please login.');
         })
         .catch(error => {
@@ -58,10 +61,13 @@ function handleUserRedirect(user) {
         document.getElementById('admin-dashboard').style.display = 'block';
         document.getElementById('quiz-container').style.display = 'none';
         document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('view-results').style.display = 'none'; // Hide View Results button for admin
         loadAdminData();
     } else {
         document.getElementById('auth-container').style.display = 'none';
         document.getElementById('quiz-container').style.display = 'block';
+        document.getElementById('result-container').style.display = 'none';
         startQuiz();
     }
 }
@@ -183,6 +189,7 @@ function submitQuiz() {
 
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('result-container').style.display = 'block';
+    document.getElementById('view-results').style.display = 'block';
 }
 
 function saveResultsToFirestore(score, total) {
@@ -190,6 +197,7 @@ function saveResultsToFirestore(score, total) {
     if (user) {
         addDoc(collection(db, 'userResults'), {
             userId: user.uid,
+            email: user.email,
             score: score,
             total: total,
             timestamp: serverTimestamp()
@@ -197,29 +205,32 @@ function saveResultsToFirestore(score, total) {
     }
 }
 
+// Retry the quiz
 document.getElementById('retry-quiz').addEventListener('click', () => {
     startQuiz();
     document.getElementById('result-container').style.display = 'none';
     document.getElementById('quiz-container').style.display = 'block';
 });
 
-// Load admin data
-async function loadAdminData() {
+// View results
+document.getElementById('view-results').addEventListener('click', async () => {
+    const resultsContainer = document.getElementById('admin-results');
+    resultsContainer.innerHTML = '';
     const querySnapshot = await getDocs(collection(db, 'userResults'));
-    const adminResultsContainer = document.getElementById('admin-results');
-    adminResultsContainer.innerHTML = '';
-
-    querySnapshot.forEach(doc => {
+    querySnapshot.forEach(async doc => {
         const data = doc.data();
-        adminResultsContainer.innerHTML += `
-            <div class="result-item">
-                <p><strong>User ID:</strong> ${data.userId}</p>
-                <p><strong>Score:</strong> ${data.score} / ${data.total}</p>
-                <p><strong>Date:</strong> ${data.timestamp.toDate().toLocaleString()}</p>
+        const userDoc = await getDocs(collection(db, 'users'));
+        const userData = userDoc.docs.find(user => user.id === data.userId)?.data();
+        resultsContainer.innerHTML += `
+            <div class="admin-result-item">
+                <h3>Email: ${data.email}</h3>
+                <p>Name: ${userData ? userData.name : 'N/A'}</p>
+                <p>Score: ${data.score} / ${data.total}</p>
+                <p>Timestamp: ${new Date(data.timestamp.seconds * 1000).toLocaleString()}</p>
             </div>
         `;
     });
-}
+});
 
 // Auto-login on page load if user is already logged in
 onAuthStateChanged(auth, user => {
@@ -230,5 +241,6 @@ onAuthStateChanged(auth, user => {
         document.getElementById('quiz-container').style.display = 'none';
         document.getElementById('result-container').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'none';
+        document.getElementById('view-results').style.display = 'none';
     }
 });
