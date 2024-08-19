@@ -1,4 +1,7 @@
 // app.js
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -11,133 +14,221 @@ const firebaseConfig = {
     measurementId: "G-NKJTC5C1XW"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Add a question to the form
-function addQuestion() {
-    const container = document.getElementById('questions-container');
-    const questionCount = container.children.length + 1;
+// Initialize quiz state
+let quizData = [];
+let userAnswers = {};
+let currentQuestionIndex = 0;
+let timer;
+const TIME_PER_QUESTION = 60; // 1 minute per question
+let timeLeft = TIME_PER_QUESTION;
 
-    const questionHTML = `
-        <div class="question">
-            <input type="text" class="question-text" placeholder="Question ${questionCount}" required>
-            <input type="text" class="option-a" placeholder="Option A" required>
-            <input type="text" class="option-b" placeholder="Option B" required>
-            <input type="text" class="option-c" placeholder="Option C" required>
-            <input type="text" class="option-d" placeholder="Option D" required>
-            <input type="text" class="correct-option" placeholder="Correct Option (A/B/C/D)" required>
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', questionHTML);
-}
-
-// Submit quiz
-document.getElementById('quiz-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const title = document.getElementById('quiz-title').value;
-    const description = document.getElementById('quiz-description').value;
-    const questions = Array.from(document.querySelectorAll('.question')).map(q => {
-        return {
-            text: q.querySelector('.question-text').value,
-            options: {
-                A: q.querySelector('.option-a').value,
-                B: q.querySelector('.option-b').value,
-                C: q.querySelector('.option-c').value,
-                D: q.querySelector('.option-d').value
-            },
-            correctOption: q.querySelector('.correct-option').value
-        };
-    });
-
-    try {
-        await db.collection('quizzes').add({
-            title,
-            description,
-            questions
+// Event listeners for authentication
+document.getElementById('login-btn').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    signInWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+            const user = userCredential.user;
+            handleUserRedirect(user);
+        })
+        .catch(error => {
+            alert('Login Failed: ' + error.message);
         });
-        alert('Quiz added successfully!');
-    } catch (error) {
-        console.error('Error adding quiz: ', error);
-    }
 });
 
-// Load quizzes for users
-async function loadQuizzes() {
-    const quizzesList = document.getElementById('quizzes-list');
-    quizzesList.innerHTML = '';
-    
-    try {
-        const snapshot = await db.collection('quizzes').get();
-        snapshot.forEach(doc => {
-            const quiz = doc.data();
-            const quizElement = document.createElement('div');
-            quizElement.innerHTML = `
-                <h3>${quiz.title}</h3>
-                <button onclick='startQuiz("${doc.id}")'>Start Quiz</button>
-            `;
-            quizzesList.appendChild(quizElement);
+document.getElementById('register-btn').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+            alert('Registration successful! Please login.');
+        })
+        .catch(error => {
+            alert('Registration Failed: ' + error.message);
         });
-    } catch (error) {
-        console.error('Error loading quizzes: ', error);
+});
+
+// Redirect user based on role
+function handleUserRedirect(user) {
+    if (user.email === 'waheedchalla@gmail.com') {
+        document.getElementById('admin-dashboard').style.display = 'block';
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('auth-container').style.display = 'none';
+        loadAdminData();
+    } else {
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        startQuiz();
     }
 }
 
-// Start a quiz
-async function startQuiz(quizId) {
-    const quizTitleDisplay = document.getElementById('quiz-title-display');
-    const questionsDisplay = document.getElementById('questions-display');
-    
-    try {
-        const doc = await db.collection('quizzes').doc(quizId).get();
-        const quiz = doc.data();
-        
-        quizTitleDisplay.textContent = quiz.title;
-        questionsDisplay.innerHTML = quiz.questions.map((q, index) => `
-            <div class="question">
-                <p>${q.text}</p>
-                ${Object.keys(q.options).map(option => `
-                    <input type="radio" name="q${index}" value="${option}"> ${q.options[option]}<br>
-                `).join('')}
+// Start the quiz and load questions
+function startQuiz() {
+    userAnswers = {};
+    quizData = [];
+    currentQuestionIndex = 0;
+    document.getElementById('question-container').innerHTML = '';
+
+    loadQuizData();
+}
+
+// Load quiz data from Firestore
+async function loadQuizData() {
+    const querySnapshot = await getDocs(collection(db, 'questions'));
+    querySnapshot.forEach(doc => {
+        quizData.push({
+            id: doc.id,
+            ...doc.data()
+        });
+    });
+    renderQuestion();
+}
+
+// Render the current question to the DOM
+function renderQuestion() {
+    const question = quizData[currentQuestionIndex];
+    const questionContainer = document.getElementById('question-container');
+    questionContainer.innerHTML = `
+        <h2>${currentQuestionIndex + 1}. ${question.question}</h2>
+        ${question.options.map(option => `
+            <div class="option" data-id="${question.id}" data-option="${option}">
+                ${option}
             </div>
-        `).join('');
-        
-        document.getElementById('quiz-taking-panel').style.display = 'block';
-    } catch (error) {
-        console.error('Error starting quiz: ', error);
+        `).join('')}
+    `;
+
+    document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            const selectedOption = e.target.dataset.option;
+            userAnswers[question.id] = selectedOption;
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            e.target.classList.add('selected');
+        });
+    });
+
+    document.getElementById('previous-question').style.display = currentQuestionIndex === 0 ? 'none' : 'block';
+    document.getElementById('next-question').style.display = currentQuestionIndex === quizData.length - 1 ? 'none' : 'block';
+    document.getElementById('submit-quiz').style.display = currentQuestionIndex === quizData.length - 1 ? 'block' : 'none';
+
+    timeLeft = TIME_PER_QUESTION;
+    startTimer();
+}
+
+// Handle navigation between questions
+document.getElementById('next-question').addEventListener('click', () => {
+    currentQuestionIndex++;
+    renderQuestion();
+});
+
+document.getElementById('previous-question').addEventListener('click', () => {
+    currentQuestionIndex--;
+    renderQuestion();
+});
+
+// Start the timer
+function startTimer() {
+    const timerElement = document.getElementById('time');
+    timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        timeLeft--;
+
+        if (timeLeft < 0) {
+            clearInterval(timer);
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+    }, 1000);
+}
+
+// Submit the quiz and evaluate results
+document.getElementById('submit-quiz').addEventListener('click', submitQuiz);
+
+function submitQuiz() {
+    clearInterval(timer);
+
+    let correctAnswers = 0;
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+
+    quizData.forEach(question => {
+        const userAnswer = userAnswers[question.id];
+        const isCorrect = userAnswer === question.correctAnswer;
+        if (isCorrect) {
+            correctAnswers++;
+        }
+
+        resultsContainer.innerHTML += `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                <h3>${question.question}</h3>
+                <p><strong>Correct Answer:</strong> ${question.correctAnswer}</p>
+                <p><strong>Your Answer:</strong> ${userAnswer || 'Not Answered'}</p>
+            </div>
+        `;
+    });
+
+    // Save results to Firestore
+    saveResultsToFirestore(correctAnswers, quizData.length);
+
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('result-container').style.display = 'block';
+}
+
+function saveResultsToFirestore(score, total) {
+    const user = auth.currentUser;
+    if (user) {
+        addDoc(collection(db, 'userResults'), {
+            userId: user.uid,
+            score: score,
+            total: total,
+            timestamp: serverTimestamp()
+        });
     }
 }
 
-// Submit quiz answers
-document.getElementById('submit-quiz').addEventListener('click', async () => {
-    const quizTitleDisplay = document.getElementById('quiz-title-display');
-    const answers = Array.from(document.querySelectorAll('.question')).map((q, index) => {
-        return {
-            question: q.querySelector('p').textContent,
-            answer: document.querySelector(`input[name="q${index}"]:checked`)?.value || 'No answer'
-        };
-    });
-
-    const userEmail = prompt("Enter your email");
-    const userName = prompt("Enter your name");
-
-    try {
-        await db.collection('responses').add({
-            quizTitle: quizTitleDisplay.textContent,
-            answers,
-            email: userEmail,
-            name: userName,
-            date: new Date()
-        });
-        alert('Quiz submitted successfully!');
-    } catch (error) {
-        console.error('Error submitting quiz: ', error);
-    }
+document.getElementById('retry-quiz').addEventListener('click', () => {
+    startQuiz();
+    document.getElementById('result-container').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
 });
 
-// Initial load
-window.onload = function() {
-    loadQuizzes();
-};
+// Load admin data
+async function loadAdminData() {
+    const querySnapshot = await getDocs(collection(db, 'userResults'));
+    const adminResultsContainer = document.getElementById('admin-results');
+    adminResultsContainer.innerHTML = '';
+
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        adminResultsContainer.innerHTML += `
+            <div class="result-item">
+                <p><strong>User ID:</strong> ${data.userId}</p>
+                <p><strong>Score:</strong> ${data.score} / ${data.total}</p>
+                <p><strong>Date:</strong> ${data.timestamp.toDate().toLocaleString()}</p>
+            </div>
+        `;
+    });
+}
+
+// Auto-login on page load if user is already logged in
+onAuthStateChanged(auth, user => {
+    if (user) {
+        handleUserRedirect(user);
+    } else {
+        document.getElementById('auth-container').style.display = 'block';
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('admin-dashboard').style.display = 'none';
+    }
+});
