@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -17,6 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Initialize quiz state
 let quizData = [];
 let userAnswers = {};
 let currentQuestionIndex = 0;
@@ -42,17 +43,24 @@ document.getElementById('register-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     createUserWithEmailAndPassword(auth, email, password)
-        .then(async userCredential => {
-            const user = userCredential.user;
-            await addDoc(collection(db, 'users'), {
-                email: user.email,
-                name: prompt('Please enter your name:')
-            });
+        .then(() => {
             alert('Registration successful! Please login.');
         })
         .catch(error => {
             alert('Registration Failed: ' + error.message);
         });
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+    signOut(auth).then(() => {
+        document.getElementById('auth-container').style.display = 'block';
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('admin-dashboard').style.display = 'none';
+        document.getElementById('view-results').style.display = 'none';
+    }).catch((error) => {
+        console.error('Logout Error:', error);
+    });
 });
 
 // Redirect user based on role
@@ -62,12 +70,14 @@ function handleUserRedirect(user) {
         document.getElementById('quiz-container').style.display = 'none';
         document.getElementById('auth-container').style.display = 'none';
         document.getElementById('result-container').style.display = 'none';
-        document.getElementById('view-results').style.display = 'none'; // Hide View Results button for admin
+        document.getElementById('view-results').style.display = 'none';
         loadAdminData();
     } else {
         document.getElementById('auth-container').style.display = 'none';
         document.getElementById('quiz-container').style.display = 'block';
         document.getElementById('result-container').style.display = 'none';
+        document.getElementById('admin-dashboard').style.display = 'none';
+        document.getElementById('view-results').style.display = 'block';
         startQuiz();
     }
 }
@@ -189,7 +199,6 @@ function submitQuiz() {
 
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('result-container').style.display = 'block';
-    document.getElementById('view-results').style.display = 'block';
 }
 
 function saveResultsToFirestore(score, total) {
@@ -197,7 +206,6 @@ function saveResultsToFirestore(score, total) {
     if (user) {
         addDoc(collection(db, 'userResults'), {
             userId: user.uid,
-            email: user.email,
             score: score,
             total: total,
             timestamp: serverTimestamp()
@@ -205,32 +213,42 @@ function saveResultsToFirestore(score, total) {
     }
 }
 
-// Retry the quiz
 document.getElementById('retry-quiz').addEventListener('click', () => {
     startQuiz();
     document.getElementById('result-container').style.display = 'none';
     document.getElementById('quiz-container').style.display = 'block';
 });
 
-// View results
-document.getElementById('view-results').addEventListener('click', async () => {
-    const resultsContainer = document.getElementById('admin-results');
-    resultsContainer.innerHTML = '';
+// Load admin data
+async function loadAdminData() {
     const querySnapshot = await getDocs(collection(db, 'userResults'));
-    querySnapshot.forEach(async doc => {
+    const adminResultsContainer = document.getElementById('admin-results');
+    adminResultsContainer.innerHTML = '';
+
+    querySnapshot.forEach(doc => {
         const data = doc.data();
-        const userDoc = await getDocs(collection(db, 'users'));
-        const userData = userDoc.docs.find(user => user.id === data.userId)?.data();
-        resultsContainer.innerHTML += `
+        adminResultsContainer.innerHTML += `
             <div class="admin-result-item">
-                <h3>Email: ${data.email}</h3>
-                <p>Name: ${userData ? userData.name : 'N/A'}</p>
-                <p>Score: ${data.score} / ${data.total}</p>
-                <p>Timestamp: ${new Date(data.timestamp.seconds * 1000).toLocaleString()}</p>
+                <h3>User ID: ${data.userId}</h3>
+                <p><strong>Score:</strong> ${data.score} / ${data.total}</p>
+                <p><strong>Date:</strong> ${data.timestamp.toDate().toLocaleString()}</p>
             </div>
         `;
     });
-});
+
+    // Load user data for admin
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    usersSnapshot.forEach(userDoc => {
+        const userData = userDoc.data();
+        adminResultsContainer.innerHTML += `
+            <div class="admin-user-item">
+                <h3>Email: ${userData.email}</h3>
+                <p><strong>Password:</strong> ${userData.password}</p> <!-- NOTE: Be cautious with storing plain text passwords. -->
+                <p><strong>Score:</strong> ${userData.score || 'No score available'}</p>
+            </div>
+        `;
+    });
+}
 
 // Auto-login on page load if user is already logged in
 onAuthStateChanged(auth, user => {
@@ -242,5 +260,34 @@ onAuthStateChanged(auth, user => {
         document.getElementById('result-container').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'none';
         document.getElementById('view-results').style.display = 'none';
+    }
+});
+
+// Add question functionality for admin
+document.getElementById('add-question-btn').addEventListener('click', async () => {
+    const questionText = document.getElementById('question-text').value;
+    const options = [
+        document.getElementById('option1').value,
+        document.getElementById('option2').value,
+        document.getElementById('option3').value,
+        document.getElementById('option4').value
+    ];
+    const correctAnswer = document.getElementById('correct-answer').value;
+
+    if (questionText && options.length === 4 && correctAnswer) {
+        await addDoc(collection(db, 'questions'), {
+            question: questionText,
+            options: options,
+            correctAnswer: correctAnswer
+        });
+        alert('Question added successfully!');
+        document.getElementById('question-text').value = '';
+        document.getElementById('option1').value = '';
+        document.getElementById('option2').value = '';
+        document.getElementById('option3').value = '';
+        document.getElementById('option4').value = '';
+        document.getElementById('correct-answer').value = '';
+    } else {
+        alert('Please fill all fields correctly.');
     }
 });
