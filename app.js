@@ -261,44 +261,39 @@ document.getElementById('previous-question').addEventListener('click', () => {
     renderQuestion();
 
 });
-
 // Start the timer
-
 function startTimer() {
-
+    timeLeft = TIME_PER_QUESTION; // Reset the time left to 1 minute
     const timerElement = document.getElementById('time');
+    
+    clearInterval(timer); // Clear any existing timer
 
     timer = setInterval(() => {
-
         const minutes = Math.floor(timeLeft / 60);
-
         const seconds = timeLeft % 60;
-
+        
+        // Format seconds to always show two digits
         timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
+        
+        // Decrement the time left by 1 second
         timeLeft--;
-
+        
+        // If time runs out, handle the end of the question
         if (timeLeft < 0) {
-
             clearInterval(timer);
-
             if (currentQuestionIndex < quizData.length - 1) {
-
                 currentQuestionIndex++;
-
                 renderQuestion();
-
             } else {
-
                 submitQuiz();
-
             }
-
         }
-
-    }, 1000);
-
+    }, 1000); // Run every 1 second
 }
+
+            
+
+
 
 // Submit the quiz and evaluate results
 
