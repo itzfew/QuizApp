@@ -3,17 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam App</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Quiz App</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1, h2 { text-align: center; }
+        .quiz-container { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+        .question { margin-bottom: 10px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 5px; }
+        .submit-btn { display: block; width: 100%; padding: 10px; background-color: #007bff; color: #fff; border: none; cursor: pointer; }
+        .admin-container { margin-top: 40px; }
+        .admin-container input, .admin-container textarea { display: block; width: 100%; margin-bottom: 10px; padding: 10px; }
+        .admin-container button { display: block; width: 100%; padding: 10px; background-color: #28a745; color: #fff; border: none; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Exam App</h1>
-    <div id="exam-container">
-        <!-- Exam questions will be dynamically added here -->
+    <div class="container">
+        <h1>Quiz App</h1>
+        <div id="quiz-container" class="quiz-container"></div>
+        <button id="submit-btn" class="submit-btn">Submit</button>
+
+        <div class="admin-container">
+            <h2>Admin Dashboard</h2>
+            <input type="text" id="quiz-title" placeholder="Quiz Title">
+            <textarea id="quiz-questions" placeholder="Enter Questions (Format: Question?|Option1|Option2|Option3|Option4)"></textarea>
+            <button id="create-quiz-btn">Create Quiz</button>
+            <h3>Users' Responses</h3>
+            <div id="responses-container"></div>
+        </div>
     </div>
-    <button id="submit-exam">Submit Exam</button>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-    <script src="js/main.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
+  authDomain: "quizapp-1ae20.firebaseapp.com",
+  projectId: "quizapp-1ae20",
+  storageBucket: "quizapp-1ae20.appspot.com",
+  messagingSenderId: "626886802317",
+  appId: "1:626886802317:web:df08c307697ca235c45bc4",
+  measurementId: "G-NKJTC5C1XW"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const quizContainer = document.getElementById('quiz-container');
+        const submitBtn = document.getElementById('submit-btn');
+        const createQuizBtn = document.getElementById('create-quiz-btn');
+        const quizTitleInput = document.getElementById('quiz-title');
+        const quizQuestionsInput = document.getElementById('quiz-questions');
+        const responsesContainer = document.getElementById('responses-container');
+
+        let currentQuiz = null;
+
+        // Load quiz
+        function loadQuiz() {
+            db.collection('quizzes').get().then((snapshot) => {
+                if (!snapshot.empty) {
+                    currentQuiz = snapshot.docs[0];
+                    const quizData = currentQuiz.data();
+                    renderQuiz(quizData.title, quizData.questions);
+                } else {
+                    quizContainer.innerHTML = 'No quiz available.';
+                }
+            });
+        }
+
+        function renderQuiz(title, questions) {
+            let quizHTML = `<h2>${title}</h2>`;
+            questions.forEach((q, index) => {
+                quizHTML += `
+                    <div class="question">
+                        <p>${index + 1}. ${q.question}</p>
+                        <ul class="options">
+                            ${q.options.map((option, i) => `
+                                <li>
+                                    <input type="radio" name="question${index}" value="${option}" id="q${index}o${i}">
+                                    <label for="q${index}o${i}">${option}</label>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            quizContainer.innerHTML = quizHTML;
+        }
+
+        // Submit quiz
+        submitBtn.addEventListener('click', () => {
+            if (currentQuiz) {
+                const answers = [];
+                const questions = currentQuiz.data().questions;
+                questions.forEach((q, index) => {
+                    const answer = document.querySelector(`input[name="question${index}"]:checked`);
+                    if (answer) {
+                        answers.push(answer.value);
+                    } else {
+                        answers.push(null);
+                    }
+                });
+
+                db.collection('responses').add({
+                    quizId: currentQuiz.id,
+                    answers: answers,
+                    timestamp: new Date()
+                }).then(() => {
+                    alert('Quiz submitted successfully!');
+                    loadQuiz();
+                });
+            }
+        });
+
+        // Admin: Create quiz
+        createQuizBtn.addEventListener('click', () => {
+            const title = quizTitleInput.value;
+            const rawQuestions = quizQuestionsInput.value.split('\n').filter(q => q.trim() !== '');
+            const questions = rawQuestions.map(q => {
+                const [question, ...options] = q.split('|');
+                return { question, options };
+            });
+
+            db.collection('quizzes').add({
+                title: title,
+                questions: questions
+            }).then(() => {
+                alert('Quiz created successfully!');
+                quizTitleInput.value = '';
+                quizQuestionsInput.value = '';
+                loadQuiz();
+            });
+        });
+
+        // Admin: Load responses
+        function loadResponses() {
+            db.collection('responses').get().then(snapshot => {
+                let responsesHTML = '';
+                snapshot.forEach(doc => {
+                    const response = doc.data();
+                    responsesHTML += `<p><strong>${doc.id}</strong>: ${JSON.stringify(response.answers)}</p>`;
+                });
+                responsesContainer.innerHTML = responsesHTML;
+            });
+        }
+
+        loadQuiz();
+        loadResponses();
+    </script>
 </body>
 </html>
