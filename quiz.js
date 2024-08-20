@@ -1,7 +1,6 @@
-// Import Firebase libraries
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js';
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, updateDoc, doc, query, where } from 'https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -28,29 +27,46 @@ const TIME_PER_QUESTION = 60; // 1 minute per question
 let timeLeft = TIME_PER_QUESTION;
 
 // Event listeners for authentication
-document.getElementById('login-btn').addEventListener('click', () => {
+document.getElementById('login-btn').addEventListener('click', async () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    signInWithEmailAndPassword(auth, email, password)
-        .then(userCredential => {
-            const user = userCredential.user;
-            handleUserRedirect(user);
-        })
-        .catch(error => {
-            alert('Login Failed: ' + error.message);
-        });
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Fetch user data including username
+        const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
+        if (!userDoc.empty) {
+            const userData = userDoc.docs[0].data();
+            handleUserRedirect(userData); // Pass userData instead of just user
+        }
+    } catch (error) {
+        alert('Login Failed: ' + error.message);
+    }
 });
 
-document.getElementById('register-btn').addEventListener('click', () => {
+document.getElementById('register-btn').addEventListener('click', async () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    createUserWithEmailAndPassword(auth, email, password)
-        .then(() => {
-            alert('Registration successful! Please login.');
-        })
-        .catch(error => {
-            alert('Registration Failed: ' + error.message);
+    const username = document.getElementById('username').value;
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Save username and additional user data to Firestore
+        await addDoc(collection(db, 'users'), {
+            uid: user.uid,
+            email: email,
+            username: username,
+            score: 0 // Initialize score
         });
+
+        alert('Registration successful! Please login.');
+    } catch (error) {
+        alert('Registration Failed: ' + error.message);
+    }
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
@@ -60,25 +76,14 @@ document.getElementById('logout-btn').addEventListener('click', () => {
         document.getElementById('result-container').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'none';
         document.getElementById('view-results').style.display = 'none';
-    }).catch(error => {
+    }).catch((error) => {
         console.error('Logout Error:', error);
     });
 });
 
-document.getElementById('reset-password-btn').addEventListener('click', () => {
-    const email = document.getElementById('reset-email').value;
-    sendPasswordResetEmail(auth, email)
-        .then(() => {
-            alert('Password reset email sent!');
-        })
-        .catch(error => {
-            alert('Error: ' + error.message);
-        });
-});
-
-// Handle user redirect based on role
-function handleUserRedirect(user) {
-    if (user.email === 'challawaheed@gmail.com') {
+// Redirect user based on role
+function handleUserRedirect(userData) {
+    if (userData.email === 'challawaheed@gmail.com') {
         document.getElementById('admin-dashboard').style.display = 'block';
         document.getElementById('quiz-container').style.display = 'none';
         document.getElementById('auth-container').style.display = 'none';
@@ -93,6 +98,9 @@ function handleUserRedirect(user) {
         document.getElementById('view-results').style.display = 'block';
         startQuiz();
     }
+    
+    // Display username if needed
+    document.getElementById('username-display').textContent = `Welcome, ${userData.username}`;
 }
 
 // Start the quiz and load questions
@@ -128,6 +136,7 @@ function renderQuestion() {
             </div>
         `).join('')}
     `;
+
     document.querySelectorAll('.option').forEach(option => {
         option.addEventListener('click', (e) => {
             const selectedOption = e.target.dataset.option;
@@ -138,9 +147,11 @@ function renderQuestion() {
             e.target.classList.add('selected');
         });
     });
+
     document.getElementById('previous-question').style.display = currentQuestionIndex === 0 ? 'none' : 'block';
     document.getElementById('next-question').style.display = currentQuestionIndex === quizData.length - 1 ? 'none' : 'block';
     document.getElementById('submit-quiz').style.display = currentQuestionIndex === quizData.length - 1 ? 'block' : 'none';
+
     timeLeft = TIME_PER_QUESTION;
     startTimer();
 }
@@ -160,12 +171,20 @@ document.getElementById('previous-question').addEventListener('click', () => {
 function startTimer() {
     timeLeft = TIME_PER_QUESTION; // Reset the time left to 1 minute
     const timerElement = document.getElementById('time');
+    
     clearInterval(timer); // Clear any existing timer
+
     timer = setInterval(() => {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
+        
+        // Format seconds to always show two digits
         timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        
+        // Decrement the time left by 1 second
         timeLeft--;
+        
+        // If time runs out, handle the end of the question
         if (timeLeft < 0) {
             clearInterval(timer);
             if (currentQuestionIndex < quizData.length - 1) {
@@ -186,12 +205,14 @@ function submitQuiz() {
     let correctAnswers = 0;
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '';
+
     quizData.forEach(question => {
         const userAnswer = userAnswers[question.id];
         const isCorrect = userAnswer === question.correctAnswer;
         if (isCorrect) {
             correctAnswers++;
         }
+
         resultsContainer.innerHTML += `
             <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
                 <h3>${question.question}</h3>
@@ -200,7 +221,10 @@ function submitQuiz() {
             </div>
         `;
     });
+
+    // Save results to Firestore
     saveResultsToFirestore(correctAnswers, quizData.length);
+
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('result-container').style.display = 'block';
 }
@@ -208,6 +232,11 @@ function submitQuiz() {
 function saveResultsToFirestore(score, total) {
     const user = auth.currentUser;
     if (user) {
+        // Update user score
+        updateDoc(doc(db, 'users', user.uid), {
+            score: score
+        });
+
         addDoc(collection(db, 'userResults'), {
             userId: user.uid,
             score: score,
@@ -228,16 +257,23 @@ async function loadAdminData() {
     const querySnapshot = await getDocs(collection(db, 'userResults'));
     const adminResultsContainer = document.getElementById('admin-results');
     adminResultsContainer.innerHTML = '';
-    querySnapshot.forEach(doc => {
+
+    for (const doc of querySnapshot.docs) {
         const data = doc.data();
+        
+        // Fetch user data for each result
+        const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', data.userId)));
+        const userData = userDoc.docs[0].data();
+
         adminResultsContainer.innerHTML += `
             <div class="admin-result-item">
-                <h3>User ID: ${data.userId}</h3>
+                <h3>Username: ${userData.username}</h3>
                 <p><strong>Score:</strong> ${data.score} / ${data.total}</p>
                 <p><strong>Date:</strong> ${data.timestamp.toDate().toLocaleString()}</p>
             </div>
         `;
-    });
+    }
+
     // Load user data for admin
     const usersSnapshot = await getDocs(collection(db, 'users'));
     usersSnapshot.forEach(userDoc => {
@@ -245,6 +281,7 @@ async function loadAdminData() {
         adminResultsContainer.innerHTML += `
             <div class="admin-user-item">
                 <h3>Email: ${userData.email}</h3>
+                <p><strong>Username:</strong> ${userData.username}</p>
                 <p><strong>Score:</strong> ${userData.score || 'No score available'}</p>
             </div>
         `;
@@ -252,9 +289,14 @@ async function loadAdminData() {
 }
 
 // Auto-login on page load if user is already logged in
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        handleUserRedirect(user);
+        // Fetch user data including username
+        const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
+        if (!userDoc.empty) {
+            const userData = userDoc.docs[0].data();
+            handleUserRedirect(userData); // Pass userData instead of just user
+        }
     } else {
         document.getElementById('auth-container').style.display = 'block';
         document.getElementById('quiz-container').style.display = 'none';
@@ -274,13 +316,16 @@ document.getElementById('add-question-btn').addEventListener('click', async () =
         document.getElementById('option4').value
     ];
     const correctAnswer = document.getElementById('correct-answer').value;
+
     if (questionText && options.length === 4 && correctAnswer) {
         await addDoc(collection(db, 'questions'), {
             question: questionText,
             options: options,
             correctAnswer: correctAnswer
         });
+
         alert('Question added successfully!');
+
         document.getElementById('question-text').value = '';
         document.getElementById('option1').value = '';
         document.getElementById('option2').value = '';
@@ -290,4 +335,15 @@ document.getElementById('add-question-btn').addEventListener('click', async () =
     } else {
         alert('Please fill all fields correctly.');
     }
+});
+
+document.getElementById('reset-password-btn').addEventListener('click', () => {
+    const email = document.getElementById('reset-email').value;
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            alert('Password reset email sent!');
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
 });
