@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz App</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <div id="auth-container">
+
+        <h1>Login / Register</h1>
+<input type="text" id="username" placeholder="Username" />
+        <input type="email" id="email" placeholder="Email" required>
+
+        <input type="password" id="password" placeholder="Password" required>
+
+        <button id="login-btn">Login</button>
+
+        <button id="register-btn">Register</button>
+<input type="email" id="reset-email" placeholder="Enter your email">
+<button id="reset-password-btn">Reset Password</button>
+
+    </div>
+    
+
+    <div id="quiz-container" style="display:none;">
+
+        <div id="question-container"></div>
+
+        <div id="time"></div> 
+
+        <button id="previous-question">Previous</button>
+
+        <button id="next-question">Next</button>
+
+        <button id="submit-quiz" style="display:none;">Submit</button>
+
+    </div>
+
+    
+
+    <div id="result-container" style="display:none;">
+
+        <h2>Quiz Results</h2>
+
+        <div id="results"></div>
+
+        <button id="retry-quiz">Retry Quiz</button>
+
+    </div>
+
+    
+
+    <div id="admin-dashboard" style="display:none;">
+
+        <h1>Admin Dashboard</h1>
+
+        <div id="admin-results"></div>
+
+        <h2>Add Question</h2>
+
+        <input type="text" id="question-text" placeholder="Question">
+
+        <input type="text" id="option1" placeholder="Option 1">
+
+        <input type="text" id="option2" placeholder="Option 2">
+
+        <input type="text" id="option3" placeholder="Option 3">
+
+        <input type="text" id="option4" placeholder="Option 4">
+
+        <input type="text" id="correct-answer" placeholder="Correct Answer">
+
+        <button id="add-question-btn">Add Question</button>
+
+    </div>
+  <div id="view-results">
+
+
+    </div>
+
+    
+
+    <button id="logout-btn">Logout</button>
+
+    
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js"></script>
+
+    <script type="module" src="app.js"></script>
+
+</body>
+
+</html> 
