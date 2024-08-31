@@ -3,31 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Website</title>
+    <title>Quiz Challenge</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Friends Test Quiz</h1>
+        <h1>Quiz Challenge</h1>
     </header>
     <main>
-        <section id="quiz-selection">
+        <section id="create-quiz-section">
+            <button id="create-quiz">Create Friend Challenge Quiz</button>
+        </section>
+        <section id="quiz-selection" style="display: none;">
             <h2>Select a Quiz</h2>
-            <ul id="quiz-list">
-                <!-- Quiz list will be populated here -->
-            </ul>
+            <ul id="quiz-list"></ul>
+        </section>
+        <section id="create-quiz-form" style="display: none;">
+            <h2>Create a Quiz</h2>
+            <input type="text" id="quiz-title" placeholder="Quiz Title">
+            <div id="questions-container"></div>
+            <button id="add-question">Add Question</button>
+            <button id="save-quiz">Save Quiz</button>
         </section>
         <section id="quiz-container" style="display: none;">
-            <h2 id="quiz-title"></h2>
-            <form id="quiz-form">
-                <!-- Questions will be populated here -->
-            </form>
+            <h2 id="quiz-title-display"></h2>
+            <form id="quiz-form"></form>
             <button id="submit-quiz">Submit</button>
         </section>
         <section id="result-container" style="display: none;">
             <h2>Your Result</h2>
             <p id="result-message"></p>
             <button id="share-whatsapp">Share on WhatsApp</button>
+        </section>
+        <section id="quiz-results" style="display: none;">
+            <h2>Quiz Results</h2>
+            <ul id="results-list"></ul>
         </section>
     </main>
     <!-- Firebase SDK -->
