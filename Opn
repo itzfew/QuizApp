@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen PDF Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        h2 {
+            text-align: center;
+        }
+        .pdf-list {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .pdf-list li {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 80%;
+            text-align: center;
+        }
+        .pdf-list li:hover {
+            background: #e0e0e0;
+            transform: scale(1.02);
+        }
+        .viewer {
+            display: none; /* Hide viewer by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        iframe {
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100vw; /* Full width */
+            height: 100vh; /* Full height */
+        }
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; /* Hide loader by default */
+        }
+        .loader div {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            z-index: 1001;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Full-Screen PDF Viewer</h2>
+    <ul class="pdf-list">
+        <li onclick="openPDF('http://www.pdf995.com/samples/pdf.pdf')">Sample PDF 1</li>
+        <li onclick="openPDF('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')">Sample PDF 2</li>
+        <li onclick="openPDF('https://www.hq.nasa.gov/alsj/a17/A17_FlightPlan.pdf')">Apollo 17 Flight Plan</li>
+    </ul>
+
+    <div class="viewer" id="pdfContainer" role="dialog" aria-labelledby="pdfTitle" aria-describedby="pdfDescription">
+        <div class="loader" id="loader">
+            <div></div>
+        </div>
+        <iframe id="pdfViewer" src="" title="PDF Viewer"></iframe>
+        <button onclick="closePDF()">Close</button>
+    </div>
+
+    <script>
+        function openPDF(url) {
+            const viewer = document.getElementById('pdfViewer');
+            const loader = document.getElementById('loader');
+            const container = document.getElementById('pdfContainer');
+            document.body.style.padding = '0'; // Remove body padding for full screen
+
+            loader.style.display = 'block'; // Show loader
+            viewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+
+            // Hide loader once the PDF is loaded
+            viewer.onload = function() {
+                loader.style.display = 'none'; // Hide loader
+            };
+
+            container.style.display = 'flex'; // Show viewer
+        }
+
+        function closePDF() {
+            const viewer = document.getElementById('pdfViewer');
+            const loader = document.getElementById('loader');
+            viewer.src = ""; // Clear the iframe
+            loader.style.display = 'none'; // Hide loader
+            document.getElementById('pdfContainer').style.display = 'none'; // Hide viewer
+            document.body.style.padding = '20px'; // Restore body padding
+        }
+    </script>
+
+</body>
+</html>
