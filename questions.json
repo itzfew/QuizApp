@@ -1,0 +1,43 @@
+{
+  "biology": [
+    {
+      "question": "What is the powerhouse of the cell?",
+      "options": ["Nucleus", "Mitochondria", "Ribosome", "Chloroplast"],
+      "correct": 1
+    },
+    {
+      "question": "What is the basic unit of life?",
+      "options": ["Atom", "Molecule", "Cell", "Organ"],
+      "correct": 2
+    },
+    {
+      "question": "What type of organism is yeast?",
+      "options": ["Bacteria", "Fungi", "Protozoa", "Algae"],
+      "correct": 1
+    }
+  ],
+  "Chap1": [
+    {
+      "question": "Which is the smallest unit of life?",
+      "options": ["Molecule", "Atom", "Cell", "Tissue"],
+      "correct": 2
+    },
+    {
+      "question": "What does the term biodiversity refer to?",
+      "options": ["Variety of life", "Species extinction", "Habitat destruction", "Climate change"],
+      "correct": 0
+    }
+  ],
+  "Chap2": [
+    {
+      "question": "Who is known as the father of taxonomy?",
+      "options": ["Darwin", "Linnaeus", "Wallace", "Huxley"],
+      "correct": 1
+    },
+    {
+      "question": "Which kingdom contains unicellular organisms?",
+      "options": ["Plantae", "Animalia", "Fungi", "Protista"],
+      "correct": 3
+    }
+  ]
+}
