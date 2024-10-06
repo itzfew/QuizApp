@@ -1,0 +1,304 @@
+{
+  "biology": [
+    {
+      "question": "What is the powerhouse of the cell?",
+      "options": ["Nucleus", "Mitochondria", "Ribosome", "Chloroplast"],
+      "correct": 1
+    },
+    {
+      "question": "What is the basic unit of life?",
+      "options": ["Atom", "Molecule", "Cell", "Organ"],
+      "correct": 2
+    },
+    {
+      "question": "What type of organism is yeast?",
+      "options": ["Bacteria", "Fungi", "Protozoa", "Algae"],
+      "correct": 1
+    },
+    {
+      "question": "Which is the smallest unit of life?",
+      "options": ["Molecule", "Atom", "Cell", "Tissue"],
+      "correct": 2
+    },
+    {
+      "question": "What does the term biodiversity refer to?",
+      "options": ["Variety of life", "Species extinction", "Habitat destruction", "Climate change"],
+      "correct": 0
+    },
+    {
+      "question": "Who is known as the father of taxonomy?",
+      "options": ["Darwin", "Linnaeus", "Wallace", "Huxley"],
+      "correct": 1
+    },
+    {
+      "question": "Which kingdom contains unicellular organisms?",
+      "options": ["Plantae", "Animalia", "Fungi", "Protista"],
+      "correct": 3
+    }
+  ],
+
+  "Chap2": [
+    {
+      "question": "Five kingdom system of classification suggested by R.H. Whittaker is not based on:",
+      "options": ["presence or absence of a well defined nucleus", "mode of reproduction", "mode of nutrition", "complexity of body organisation"],
+      "correct": 1
+    },
+    {
+      "question": "Maximum nutritional diversity is found in the group:",
+      "options": ["fungi", "animalia", "monera", "plantae"],
+      "correct": 2
+    },
+    {
+      "question": "In the five kingdom classification, Chlamydomonas and Chlorella have been included in:",
+      "options": ["protista", "algae", "plantae", "monera"],
+      "correct": 0
+    },
+    {
+      "question": "In which kingdom would you classify the archaea and nitrogen-fixing organisms, if the five kingdom system of classification is used?",
+      "options": ["Plantae", "Fungi", "Protista", "Monera"],
+      "correct": 3
+    },
+    {
+      "question": "In five kingdom system, the main basis of classification is:",
+      "options": ["structure of nucleus", "mode of nutrition", "structure of cell wall", "asexual reproduction"],
+      "correct": 1
+    },
+    {
+      "question": "In the five kingdom system of classification, which single kingdom out of the following can include blue-green algae, nitrogen fixing bacteria and methanogenic archaebacteria?",
+      "options": ["Plantae", "Protista", "Monera", "Fungi"],
+      "correct": 2
+    },
+    {
+      "question": "BGA (blue green algae) are included in which of the following groups?",
+      "options": ["Bryophytes", "Prokaryotes", "Protista", "Fungi"],
+      "correct": 1
+    },
+    {
+      "question": "An important criterion for modern day classification is:",
+      "options": ["resemblances in morphology", "anatomical and physiological traits", "breeding habits", "presence or absence of notochord"],
+      "correct": 1
+    },
+    {
+      "question": "Match the organisms in column-I with habitats in column-II.",
+      "options": ["A-(iv), B-(i), C-(iii), D-(ii)", "A-(i), B-(ii), C-(iii), D-(iv)", "A-(iii), B-(iv), C-(ii), D-(i)", "A-(ii), B-(iv), C-(iii), D-(i)"],
+      "correct": 0
+    },
+    {
+      "question": "Which of the following are found in extreme saline conditions?",
+      "options": ["Eubacteria", "Cyanobacteria", "Mycobacteria", "Archaebacteria"],
+      "correct": 3
+    },
+    {
+      "question": "Which among the following are the smallest living cells, known without a definite cell wall, pathogenic to plants as well as animals and can survive without oxygen?",
+      "options": ["Pseudomonas", "Mycoplasma", "Nostoc", "Bacillus"],
+      "correct": 1
+    },
+    {
+      "question": "Which of the following components provides sticky character to the bacterial cell?",
+      "options": ["Nuclear membrane", "Plasma membrane", "Glycocalyx", "Cell wall"],
+      "correct": 2
+    },
+    {
+      "question": "DNA replication in bacteria occurs:",
+      "options": ["within nucleolus", "prior to fission", "just before transcription", "during S phase"],
+      "correct": 1
+    },
+    {
+      "question": "Methanogens belong to:",
+      "options": ["eubacteria", "archaea", "dinoflagellates", "slime moulds"],
+      "correct": 1
+    },
+    {
+      "question": "The primitive prokaryotes responsible for the production of biogas from the dung of ruminant animals, include the:",
+      "options": ["methanogens", "eubacteria", "halophiles", "thermoacidophiles"],
+      "correct": 0
+    },
+    {
+      "question": "Archaebacteria differ from eubacteria in:",
+      "options": ["cell membrane structure", "mode of nutrition", "cell shape", "mode of reproduction"],
+      "correct": 0
+    },
+    {
+      "question": "Which of the following are likely to be present in deep sea water?",
+      "options": ["Blue-green algae", "Saprophytic fungi", "Archaebacteria", "Eubacteria"],
+      "correct": 2
+    },
+    {
+      "question": "Pigment containing membranous extensions in some cyanobacteria are:",
+      "options": ["pneumatophores", "chromatophores", "heterocysts", "basal bodies"],
+      "correct": 1
+    },
+    {
+      "question": "The cyanobacteria are also referred to as:",
+      "options": ["protists", "golden algae", "slime moulds", "blue green algae"],
+      "correct": 3
+    },
+    {
+      "question": "The most abundant prokaryotes helpful to humans in making curd from milk and in production of antibiotics are the ones categorized as:",
+      "options": ["cyanobacteria", "archaea", "chemosynthetic autotrophs", "heterotrophic bacteria"],
+      "correct": 3
+    }
+  ],
+  "Chap3": [
+    {
+      "question": "Phylogenetic system of classification is based on:",
+      "options": ["morphological features", "chemical constituents", "floral characters", "evolutionary relationships"],
+      "correct": 3
+    },
+    {
+      "question": "Phenetic classification of organisms is based on:",
+      "options": ["observable characteristics of existing organisms", "the ancestral lineage of existing organisms", "dendrogram based on DNA characteristics", "sexual characteristics"],
+      "correct": 0
+    },
+    {
+      "question": "A system of classification, in which a large number of traits are considered, is:",
+      "options": ["natural system", "phylogenetic system", "artificial system", "synthetic system"],
+      "correct": 0
+    },
+    {
+      "question": "Phylogenetic classification is one which is based on:",
+      "options": ["overall similarities", "utilitarian system", "habits of plants", "common evolutionary descent"],
+      "correct": 3
+    },
+    {
+      "question": "System of classification used by Linnaeus was:",
+      "options": ["natural system", "artificial system", "phylogenetic system", "asexual system"],
+      "correct": 1
+    },
+    {
+      "question": "Artificial system of classification was first used by:",
+      "options": ["Linnaeus", "De Candolle", "Pliny the Elder", "Bentham and Hooker"],
+      "correct": 0
+    },
+    {
+      "question": "Classification given by Bentham and Hooker is:",
+      "options": ["artificial", "natural", "phylogenetic", "numerical"],
+      "correct": 1
+    },
+    {
+      "question": "Floridean starch has structure similar to:",
+      "options": ["starch and cellulose", "amylopectin and glycogen", "mannitol and algin", "laminarin and cellulose"],
+      "correct": 1
+    },
+    {
+      "question": "Which of the following pairs is of unicellular algae?",
+      "options": ["Laminaria and Sargassum", "Gelidium and Gracilaria", "Anabaena and Volvox", "Chlorella and Spirulina"],
+      "correct": 3
+    },
+    {
+      "question": "An example of colonial alga is:",
+      "options": ["Volvox", "Ulothrix", "Spirogyra", "Chlorella"],
+      "correct": 0
+    },
+    {
+      "question": "Which one of the following statements is wrong?",
+      "options": ["Algae increase the level of dissolved oxygen in the immediate environment.", "Algin is obtained from red algae, and carrageenan from brown algae.", "Agar-agar is obtained from Gelidium and Gracilaria.", "Laminaria and Sargassum are used as food."],
+      "correct": 1
+    },
+    {
+      "question": "Which one of the following statements is wrong?",
+      "options": ["Chlorella and Spirulina are used as space food.", "Mannitol is stored food in Rhodophyceae.", "Algin and carrageenan are products of algae.", "Agar-agar is obtained from Gelidium and Gracilaria."],
+      "correct": 1
+    },
+    {
+      "question": "Male gametes are flagellated in:",
+      "options": ["Ectocarpus", "Spirogyra", "Polysiphonia", "Anabaena"],
+      "correct": 0
+    },
+    {
+      "question": "Which one of the following is wrong about Chara?",
+      "options": ["Upper oogonium and lower round antheridium", "Globule and nucule present on the same plant", "Upper antheridium and lower oogonium", "Globule is male reproductive structure"],
+      "correct": 2
+    },
+    {
+      "question": "Which one of the following shows isogamy with non-flagellated gametes?",
+      "options": ["Sargassum", "Ectocarpus", "Ulothrix", "Spirogyra"],
+      "correct": 2
+    },
+    {
+      "question": "Sexual reproduction involving fusion of two cells in Chlamydomonas is:",
+      "options": ["isogamy", "homogamy", "somatogamy", "hologamy"],
+      "correct": 0
+    },
+    {
+      "question": "Which one is wrongly matched?",
+      "options": ["Uniflagellate gametes – Polysiphonia", "Biflagellate zoospores – Brown algae", "Gemma cups – Marchantia", "Unicellular organism – Chlorella"],
+      "correct": 0
+    },
+    {
+      "question": "Which of the following is responsible for peat formation?",
+      "options": ["Marchantia", "Riccia", "Funaria", "Sphagnum"],
+      "correct": 3
+    },
+    {
+      "question": "Which one of the following is common to multicellular fungi, filamentous algae and protonema of mosses?",
+      "options": ["Diplontic life cycle", "Members of Kingdom Plantae", "Mode of nutrition", "Multiplication by fragmentation"],
+      "correct": 3
+    },
+    {
+      "question": "Examine the given figure and select the correct option giving all the four parts (A, B, C and D) rightly identified.",
+      "options": ["Archegoniophore - Female - Gemma - Rhizoids", "Archegoniophore - Female - Bud - Foot", "Seta - Sporophyte - Protonema", "Antheridiophore - Male - Globule - Roots"],
+      "correct": 0
+    },
+    {
+      "question": "Spore dissemination in some liverworts is aided by:",
+      "options": ["indusium", "calyptra", "peristome teeth", "elaters"],
+      "correct": 3
+    },
+    {
+      "question": "Peat moss is used as a packing material for sending flowers and live plants to distant places because:",
+      "options": ["it serves as a disinfectant", "it is easily available", "it is hygroscopic", "it reduces transpiration"],
+      "correct": 2
+    },
+    {
+      "question": "In a moss, the sporophyte:",
+      "options": ["manufactures food for itself, as well as for the gametophyte", "is partially parasitic on the gametophyte", "produces gametes that give rise to the gametophyte", "arises from a spore produced from the gametophyte"],
+      "correct": 1
+    },
+    {
+      "question": "The antherozoids of Funaria are:",
+      "options": ["multiciliated", "monociliated", "aciliated", "biciliated"],
+      "correct": 3
+    },
+    {
+      "question": "Bryophytes comprise:",
+      "options": ["dominant phase of gametophyte which produces spores", "small sporophyte phase and generally parasitic on gametophyte", "sporophyte is of longer duration", "dominant phase of sporophyte which is parasitic"],
+      "correct": 1
+    },
+    {
+      "question": "Which of the following is true about bryophytes?",
+      "options": ["They are thalloid.", "They possess archegonia.", "They contain chloroplast.", "All of these"],
+      "correct": 3
+    },
+    {
+      "question": "Bryophytes are dependent on water, because:",
+      "options": ["water is essential for their vegetative propagation", "the sperms can easily reach up to egg in the archegonium", "archegonium has to remain filled with water for fertilization", "water is essential for fertilization for their homosporous nature"],
+      "correct": 1
+    },
+    {
+      "question": "Bryophytes can be separated from algae, because they:",
+      "options": ["possess archegonia", "contain chloroplast", "are thalloid forms", "have no conducting tissue"],
+      "correct": 0
+    },
+    {
+      "question": "Elater mechanism for spore dispersal is exhibited by:",
+      "options": ["liverworts", "Marchantia", "Riccia", "Funaria"],
+      "correct": 0
+    },
+    {
+      "question": "The plant body of moss (Funaria) is:",
+      "options": ["completely sporophyte", "predominantly gametophyte with sporophyte", "completely gametophyte", "predominantly sporophyte with gametophyte"],
+      "correct": 1
+    },
+    {
+      "question": "In bryophytes:",
+      "options": ["both generations are independent", "gametophytes are dependent upon sporophytes", "sporophytes complete their life cycle", "sporophytes are dependent upon gametophytes"],
+      "correct": 3
+    },
+    {
+      "question": "Protonema occurs in the life cycle of:",
+      "options": ["Riccia", "Funaria", "Anthoceros", "Spirogya"],
+      "correct": 1
+    }
+  ]
+}
