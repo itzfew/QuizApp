@@ -9,11 +9,17 @@ let timeLeft = 0; // Total time in seconds
 document.getElementById('startButton').addEventListener('click', startQuiz);
 document.getElementById('prevButton').addEventListener('click', () => changeQuestion(-1));
 document.getElementById('nextButton').addEventListener('click', () => changeQuestion(1));
-document.getElementById('submitButton').addEventListener('click', submitQuiz);
+document.getElementById('submitButton').addEventListener('click', confirmSubmit);
 
 async function startQuiz() {
     const subject = document.getElementById('subject').value;
-    numQuestions = parseInt(document.getElementById('numQuestions').value) || 5;
+    numQuestions = parseInt(document.getElementById('numQuestions').value) || 2;
+
+    if (numQuestions < 2 || numQuestions > 15) {
+        alert("Number of questions must be between 2 and 15.");
+        return;
+    }
+
     selectedQuestions = await getQuestions(subject, numQuestions);
     userAnswers = new Array(numQuestions).fill(null);
     currentQuestion = 0;
@@ -30,7 +36,19 @@ async function getQuestions(subject, num) {
         const response = await fetch('https://raw.githubusercontent.com/itzfew/QuizApp/refs/heads/main/questions.json');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        const questions = data[subject];
+
+        let questions = [];
+
+        if (subject === 'random') {
+            // Combine all questions from all chapters
+            for (const key in data) {
+                if (Array.isArray(data[key])) {
+                    questions = questions.concat(data[key]);
+                }
+            }
+        } else {
+            questions = data[subject];
+        }
 
         if (questions.length < num) {
             alert(`Not enough questions available in ${subject}. Showing ${questions.length} questions instead.`);
@@ -64,7 +82,7 @@ function updateProgressBar() {
 
 function displayQuestion() {
     const question = selectedQuestions[currentQuestion];
-    document.getElementById('question').innerText = question.question;
+    document.getElementById('question').innerText = `Question ${currentQuestion + 1} of ${numQuestions}: ${question.question}`;
     const options = document.getElementById('options');
     options.innerHTML = '';
     question.options.forEach((option, index) => {
@@ -116,6 +134,27 @@ function updateQuestionNumbers() {
     }
 }
 
+function getFeedback(score) {
+    const totalMarks = numQuestions * 4; // Maximum marks
+    const percentage = (score / totalMarks) * 100;
+
+    if (percentage === 100) {
+        return "Excellent work! Perfect score!";
+    } else if (percentage >= 75) {
+        return "Great job! You're really good at this!";
+    } else if (percentage >= 50) {
+        return "Good effort! Keep practicing!";
+    } else {
+        return "Don't be discouraged. Review the material and try again!";
+    }
+}
+
+function confirmSubmit() {
+    if (confirm("Are you sure you want to submit the quiz?")) {
+        submitQuiz();
+    }
+}
+
 function submitQuiz() {
     clearInterval(timerInterval); // Stop the timer
     let score = 0;
@@ -143,6 +182,7 @@ function submitQuiz() {
     const averageTimeDisplay = `${Math.floor(averageTime / 60)}:${(averageTime % 60 < 10 ? '0' : '')}${averageTime % 60} mins`;
 
     const resultContainer = document.getElementById('result');
+    const feedback = getFeedback(score);
     resultContainer.innerHTML = `
         <h2>Results</h2>
         <p><strong>Total Questions:</strong> ${numQuestions}</p>
@@ -152,6 +192,7 @@ function submitQuiz() {
         <p><strong>Total Marks Obtained:</strong> ${score} / ${totalMarks}</p>
         <p><strong>Percentage:</strong> ${percentage.toFixed(2)}%</p>
         <p><strong>Average Time Taken per Question:</strong> ${averageTimeDisplay}</p>
+        <p><strong>Feedback:</strong> ${feedback}</p>
         <h3>Detailed Results:</h3>
         ${selectedQuestions.map((question, i) => `
             <div class="result-item">
