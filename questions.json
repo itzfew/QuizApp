@@ -14,9 +14,7 @@
       "question": "What type of organism is yeast?",
       "options": ["Bacteria", "Fungi", "Protozoa", "Algae"],
       "correct": 1
-    }
-  ],
-  "Chap1": [
+    },
     {
       "question": "Which is the smallest unit of life?",
       "options": ["Molecule", "Atom", "Cell", "Tissue"],
@@ -26,9 +24,7 @@
       "question": "What does the term biodiversity refer to?",
       "options": ["Variety of life", "Species extinction", "Habitat destruction", "Climate change"],
       "correct": 0
-    }
-  ],
-  "Chap2": [
+    },
     {
       "question": "Who is known as the father of taxonomy?",
       "options": ["Darwin", "Linnaeus", "Wallace", "Huxley"],
@@ -41,6 +37,258 @@
     }
   ],
   
+  "Chap1": [
+    {
+        "question": "Which one of the following aspects is an exclusive characteristic of living things?",
+        "options": [
+            "Isolated metabolic reactions occur in vitro",
+            "Increase in mass from inside only",
+            "Perception of events happening in the environment and their memory",
+            "Increase in mass by accumulation of material both on surface as well as internally"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "The living organisms can be unexceptionally distinguished from the non-living things on the basis of their ability for:",
+        "options": [
+            "interaction with the environment and progressive evolution",
+            "reproduction",
+            "growth and movement",
+            "responsiveness to touch"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "Biological organisation starts with:",
+        "options": [
+            "cellular level",
+            "organismic level",
+            "atomic level",
+            "submicroscopic molecular level"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "Select the correctly written scientific name of Mango which was first described by Carolus Linnaeus.",
+        "options": [
+            "Mangifera Indica",
+            "Mangifera indica Car. Linn.",
+            "Mangifera indica Linn.",
+            "Mangifera indica"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "Which of the following is against the rules of ICBN?",
+        "options": [
+            "Hand written scientific names should be underlined",
+            "Every species should have a generic name and a specific epithet",
+            "Scientific names are in Latin and should be italicized",
+            "Generic and specific names should be written starting with small letters"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "Nomenclature is governed by certain universal rules. Which one of the following is contrary to the rules of nomenclature?",
+        "options": [
+            "The names are written in Latin and are italicised",
+            "When written by hand the names are to be underlined",
+            "Biological names can be written in any language",
+            "The first word in a biological name represents the genus name and the second is a specific epithet"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "ICBN stands for:",
+        "options": [
+            "International Code of Botanical Nomenclature",
+            "International Congress of Biological Names",
+            "Indian Code of Botanical Nomenclature",
+            "Indian Congress of Biological Names"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Biosystematics aims at:",
+        "options": [
+            "the classification of organisms based on broad morphological characters",
+            "delimiting various taxa of organisms and establishing their relationships",
+            "the classification of organisms based on their evolutionary history and establishing their phylogeny on the totality of various parameters from all fields of studies",
+            "identification and arrangement of organisms on the basis of their cytological characteristics"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "The book ‘Genera Plantarum’ was written by:",
+        "options": [
+            "Engler and Prantl",
+            "Bentham and Hooker",
+            "Bessey",
+            "Hutchinson"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "Linnaeus is credited with:",
+        "options": [
+            "binomial nomenclature",
+            "theory of biogenesis",
+            "discovery of microscope",
+            "discovery of blood circulation"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Linnaeus evolved a system of nomenclature called:",
+        "options": [
+            "mononomial",
+            "vernacular",
+            "binomial",
+            "polynomial"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "The term 'New Systematics' was introduced by:",
+        "options": [
+            "Bentham and Hooker",
+            "Linnaeus",
+            "Julian Huxley",
+            "A.P. de Candolle"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "Match column I with column II for housefly classification and select the correct option using the codes given below.",
+        "options": [
+            "A-(iii), B-(i), C-(iv), D-(ii)",
+            "A-(iii), B-(ii), C-(iv), D-(i)",
+            "A-(iv), B-(iii), C-(ii), D-(i)",
+            "A-(iv), B-(ii), C-(i), D-(iii)"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "The common characteristics between tomato and potato will be maximum at the level of their:",
+        "options": [
+            "family",
+            "order",
+            "division",
+            "genus"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "Which one of the following organisms is scientifically correctly named, correctly printed according to the International Rules of Nomenclature and correctly described?",
+        "options": [
+            "Musca domestica - the common house lizard, a reptile",
+            "Plasmodium falciparum - a protozoan pathogen causing the most serious type of malaria",
+            "Felis tigris - the Indian tiger, well protected in Gir forests",
+            "E.coli - full name Entamoeba coli, a commonly occurring bacterium in human intestine"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "Which one of the following animals is correctly matched with its particular taxonomic category?",
+        "options": [
+            "Tiger - tigris, species",
+            "Cuttlefish - mollusca, class",
+            "Humans - primata, family",
+            "Housefly - Musca, order"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Species are considered as:",
+        "options": [
+            "real basic units of classification",
+            "the lowest units of classification",
+            "artificial concept of human mind which cannot be defined in absolute terms",
+            "real units of classification devised by taxonomists"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Which of the following is less general in characters as compared to genus?",
+        "options": [
+            "Species",
+            "Division",
+            "Class",
+            "Family"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "'Taxon' is the unit of a group of:",
+        "options": [
+            "order",
+            "taxonomy",
+            "species",
+            "genes"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "Sequence of taxonomic categories is:",
+        "options": [
+            "class–phylum–tribe–order–family–genus–species",
+            "division–class–family–tribe–order–genus–species",
+            "division–class–order–family–tribe–genus–species",
+            "phylum–order–class–tribe–family–genus–species"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "The term phylum was given by:",
+        "options": [
+            "Cuvier",
+            "Haeckel",
+            "Theophrastus",
+            "Linnaeus"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "A group of plants or animals with similar traits of any rank is:",
+        "options": [
+            "species",
+            "genus",
+            "order",
+            "taxon"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "A taxon is:",
+        "options": [
+            "a group of related families",
+            "a group of related species",
+            "a type of living organisms",
+            "a taxonomic group of any ranking"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "Basic unit or smallest taxon of taxonomy/classification is:",
+        "options": [
+            "species",
+            "kingdom",
+            "family",
+            "variety"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Static concept of species was put forward by:",
+        "options": [
+            "de Candolle",
+            "Linnaeus",
+            "Theophrastus",
+            "Darwin"
+        ],
+        "correct": 1
+      )
+      ],
   "Chap2": [
     {
       "question": "Five kingdom system of classification suggested by R.H. Whittaker is not based on:",
