@@ -26,17 +26,22 @@ async function startQuiz() {
 }
 
 async function getQuestions(subject, num) {
-    const response = await fetch('questions.json');
-    const data = await response.json();
-    const questions = data[subject];
-    
-    if (questions.length < num) {
-        alert(`Not enough questions available in ${subject}. Showing ${questions.length} questions instead.`);
-        num = questions.length;
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/itzfew/QuizApp/refs/heads/main/questions.json');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        const questions = data[subject];
+
+        if (questions.length < num) {
+            alert(`Not enough questions available in ${subject}. Showing ${questions.length} questions instead.`);
+            num = questions.length;
+        }
+
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, num);
+    } catch (error) {
+        console.error('Error fetching questions:', error);
     }
-    
-    const shuffled = questions.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, num);
 }
 
 function startTimer() {
@@ -134,6 +139,8 @@ function submitQuiz() {
 
     const totalMarks = numQuestions * 4; // Maximum marks
     const percentage = (score / totalMarks) * 100;
+    const averageTime = ((numQuestions * 60) / numQuestions); // Average time per question in seconds
+    const averageTimeDisplay = `${Math.floor(averageTime / 60)}:${(averageTime % 60 < 10 ? '0' : '')}${averageTime % 60} mins`;
 
     const resultContainer = document.getElementById('result');
     resultContainer.innerHTML = `
@@ -144,19 +151,28 @@ function submitQuiz() {
         <p><strong>Missed:</strong> ${missedCount}</p>
         <p><strong>Total Marks Obtained:</strong> ${score} / ${totalMarks}</p>
         <p><strong>Percentage:</strong> ${percentage.toFixed(2)}%</p>
+        <p><strong>Average Time Taken per Question:</strong> ${averageTimeDisplay}</p>
+        <h3>Detailed Results:</h3>
+        ${selectedQuestions.map((question, i) => `
+            <div class="result-item">
+                <p><strong>Question ${i + 1}:</strong> ${question.question}</p>
+                <p class="${userAnswers[i] === question.correct ? 'correct' : 'wrong'}">
+                    Your answer: ${userAnswers[i] !== null ? question.options[userAnswers[i]] : 'No answer'}
+                    ${userAnswers[i] !== null && userAnswers[i] !== question.correct ? `<br>Correct answer: ${question.options[question.correct]}` : ''}
+                </p>
+            </div>
+        `).join('')}
     `;
 
     document.getElementById('quiz').style.display = 'none';
     resultContainer.style.display = 'block';
 
-    // Save quiz result to local history
+    // Save the result to history
     const quizResult = {
         date: new Date().toLocaleString(),
-        score: score,
-        totalQuestions: numQuestions,
-        correct: correctCount,
-        incorrect: incorrectCount,
-        missed: missedCount
+        questions: selectedQuestions,
+        answers: userAnswers,
+        score: score
     };
     quizHistory.push(quizResult);
     localStorage.setItem('quizHistory', JSON.stringify(quizHistory));
@@ -165,20 +181,39 @@ function submitQuiz() {
 
 function displayHistory() {
     const historyContainer = document.getElementById('history');
-    historyContainer.innerHTML = `<h2>Quiz History</h2>`;
-    
-    quizHistory.forEach(result => {
-        const resultDiv = document.createElement('div');
-        resultDiv.classList.add('result-item');
-        resultDiv.innerHTML = `
-            <p><strong>Date:</strong> ${result.date}</p>
-            <p><strong>Score:</strong> ${result.score}</p>
-            <p><strong>Total Questions:</strong> ${result.totalQuestions}</p>
-            <p><strong>Correct:</strong> ${result.correct}</p>
-            <p><strong>Incorrect:</strong> ${result.incorrect}</p>
-            <p><strong>Missed:</strong> ${result.missed}</p>
+    historyContainer.innerHTML = '<h2>History</h2>';
+    quizHistory.forEach((quiz, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.innerHTML = `
+            <p><strong>Quiz ${index + 1}</strong> - ${quiz.date} - Score: ${quiz.score}</p>
+            <button class="button" onclick="viewHistory(${index})"><i class="fas fa-eye"></i> View</button>
         `;
-        historyContainer.appendChild(resultDiv);
+        historyContainer.appendChild(historyItem);
     });
     historyContainer.style.display = 'block';
 }
+
+function viewHistory(index) {
+    const quiz = quizHistory[index];
+    const resultContainer = document.getElementById('result');
+    resultContainer.innerHTML = `<h2>Quiz on ${quiz.date}</h2>`;
+    quiz.questions.forEach((question, i) => {
+        const userAnswer = quiz.answers[i];
+        const isCorrect = userAnswer === question.correct;
+        const result = document.createElement('div');
+        result.className = 'result-item';
+        result.innerHTML = `
+            <p><strong>Question ${i + 1}:</strong> ${question.question}</p>
+            <p class="${isCorrect ? 'correct' : 'wrong'}">
+                Your answer: ${userAnswer !== null ? question.options[userAnswer] : 'No answer'}
+                ${!isCorrect ? `<br>Correct answer: ${question.options[question.correct]}` : ''}
+            </p>
+        `;
+        resultContainer.appendChild(result);
+    });
+    document.getElementById('quiz').style.display = 'none';
+    resultContainer.style.display = 'block';
+}
+
+// Initialize history display
+displayHistory();
