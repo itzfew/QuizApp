@@ -12,14 +12,15 @@
         <h1><i class="fas fa-question-circle"></i> Quiz Game</h1>
         <div id="setup">
             <label for="numQuestions"><i class="fas fa-list-alt"></i> Number of Questions: </label>
-            <input type="number" id="numQuestions" min="1" max="15" placeholder="5">
+            <input type="number" id="numQuestions" min="1" max="15" placeholder="15">
             <label for="subject"><i class="fas fa-book"></i> Select Subject:</label>
             <select id="subject">
-              <option value="biology">Full Biology</option>              
-                <option value="Chap1">Living World </option>
+                <option value="random">Random Questions</option>
+                <option value="biology">Full Biology</option>
+                <option value="Chap1">Living World</option>
                 <option value="Chap2">Biological Classification</option>
-                <option value="Chap3">Plant Kindom</option>
-                <option value="Chap4">Animal Kindom</option>
+                <option value="Chap3">Plant Kingdom</option>
+                <option value="Chap4">Animal Kingdom</option>
                 <option value="Chap5">Morphology In Flowering Plants</option>
                 <option value="Chap6">Anatomy In Flowering Plants</option>
             </select>
@@ -37,12 +38,12 @@
             </div>
             <button id="prevButton" class="button"><i class="fas fa-arrow-left"></i> Previous</button>
             <button id="nextButton" class="button"><i class="fas fa-arrow-right"></i> Next</button>
-            <button id="submitButton" class="button"><i class="fas fa-check"></i> Submit</button>
+            <button id="submitButton" class="button" onclick="confirmSubmit()"><i class="fas fa-check"></i> Submit</button>
         </div>
         <div id="result" style="display:none;"></div>
         <div id="history" style="display:none;"></div>
     </div>
 
     <script src="script.js"></script>
-</body>
+</body> 
 </html>
