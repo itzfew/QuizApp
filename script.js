@@ -1,178 +1,184 @@
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAolcB_o6f1CQPbLSYrMKTYaz_xYs54khY",
-    authDomain: "quizapp-1ae20.firebaseapp.com",
-    databaseURL: "https://quizapp-1ae20-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "quizapp-1ae20",
-    storageBucket: "quizapp-1ae20.appspot.com",
-    messagingSenderId: "626886802317",
-    appId: "1:626886802317:web:df08c307697ca235c45bc4",
-    measurementId: "G-NKJTC5C1XW"
-};
+let selectedQuestions = [];
+let userAnswers = [];
+let currentQuestion = 0;
+let numQuestions = 0;
+let quizHistory = JSON.parse(localStorage.getItem('quizHistory')) || [];
+let timerInterval;
+let timeLeft = 0; // Total time in seconds
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+document.getElementById('startButton').addEventListener('click', startQuiz);
+document.getElementById('prevButton').addEventListener('click', () => changeQuestion(-1));
+document.getElementById('nextButton').addEventListener('click', () => changeQuestion(1));
+document.getElementById('submitButton').addEventListener('click', submitQuiz);
 
-document.addEventListener('DOMContentLoaded', () => {
-    const createQuizButton = document.getElementById('create-quiz');
-    const saveQuizButton = document.getElementById('save-quiz');
-    const submitQuizButton = document.getElementById('submit-quiz');
-    const addQuestionButton = document.getElementById('add-question');
-
-    createQuizButton.addEventListener('click', () => {
-        document.getElementById('create-quiz-section').style.display = 'none';
-        document.getElementById('create-quiz-form').style.display = 'block';
-    });
-
-    addQuestionButton.addEventListener('click', () => {
-        const questionIndex = document.querySelectorAll('#questions-container .question').length;
-        const questionDiv = document.createElement('div');
-        questionDiv.classList.add('question');
-        questionDiv.innerHTML = `
-            <input type="text" placeholder="Question ${questionIndex + 1}" class="question-text"><br>
-            <input type="text" placeholder="Option 1" class="option"><br>
-            <input type="text" placeholder="Option 2" class="option"><br>
-            <input type="text" placeholder="Option 3" class="option"><br>
-            <input type="text" placeholder="Option 4" class="option"><br>
-        `;
-        document.getElementById('questions-container').appendChild(questionDiv);
-    });
-
-    saveQuizButton.addEventListener('click', () => {
-        const title = document.getElementById('quiz-title').value;
-        const questions = Array.from(document.querySelectorAll('#questions-container .question')).map(qDiv => {
-            const questionText = qDiv.querySelector('.question-text').value;
-            const options = Array.from(qDiv.querySelectorAll('.option')).map(o => o.value);
-            return { text: questionText, options };
-        });
-
-        db.collection('quizzes').add({ title, questions }).then(docRef => {
-            const quizId = docRef.id;
-            alert(`Quiz created with ID: ${quizId}`);
-            document.getElementById('create-quiz-form').style.display = 'none';
-            document.getElementById('create-quiz-section').style.display = 'block';
-            fetchQuizzes(); // Refresh the quiz list
-        }).catch(error => {
-            console.error('Error saving quiz:', error);
-        });
-    });
-
-    submitQuizButton.addEventListener('click', () => {
-        submitQuiz();
-    });
-
-    fetchQuizzes(); // Fetch quizzes on load
-});
-
-function fetchQuizzes() {
-    db.collection('quizzes').get().then((querySnapshot) => {
-        const quizList = document.getElementById('quiz-list');
-        quizList.innerHTML = ''; // Clear previous list
-        querySnapshot.forEach((doc) => {
-            const quiz = doc.data();
-            const li = document.createElement('li');
-            li.textContent = quiz.title;
-            li.dataset.id = doc.id;
-            li.addEventListener('click', () => {
-                window.location.href = `?quiz=${doc.id}`;
-            });
-            quizList.appendChild(li);
-        });
-    }).catch(error => {
-        console.error('Error fetching quizzes:', error);
-    });
+async function startQuiz() {
+    const subject = document.getElementById('subject').value;
+    numQuestions = parseInt(document.getElementById('numQuestions').value) || 5;
+    selectedQuestions = await getQuestions(subject, numQuestions);
+    userAnswers = new Array(numQuestions).fill(null);
+    currentQuestion = 0;
+    timeLeft = numQuestions * 60; // Total time in seconds
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    displayQuestion();
+    startTimer();
+    updateProgressBar();
 }
 
-function loadQuiz(quizId) {
-    db.collection('quizzes').doc(quizId).get().then((doc) => {
-        if (doc.exists) {
-            const quiz = doc.data();
-            document.getElementById('quiz-title-display').textContent = quiz.title;
-            const form = document.getElementById('quiz-form');
-            form.innerHTML = '';
-            quiz.questions.forEach((question, index) => {
-                const div = document.createElement('div');
-                div.innerHTML = `<p>${question.text}</p>`;
-                question.options.forEach((option, i) => {
-                    div.innerHTML += `
-                        <input type="radio" name="q${index}" value="${i}" id="q${index}-o${i}">
-                        <label for="q${index}-o${i}">${option}</label><br>
-                    `;
-                });
-                form.appendChild(div);
-            });
-            document.getElementById('quiz-container').style.display = 'block';
-            document.getElementById('result-container').style.display = 'none';
-            document.getElementById('quiz-results').style.display = 'none';
+async function getQuestions(subject, num) {
+    const response = await fetch('questions.json');
+    const data = await response.json();
+    const questions = data[subject];
+    
+    if (questions.length < num) {
+        alert(`Not enough questions available in ${subject}. Showing ${questions.length} questions instead.`);
+        num = questions.length;
+    }
+    
+    const shuffled = questions.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, num);
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = `Time Left: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60 < 10 ? '0' : '')}${timeLeft % 60}`;
+        updateProgressBar();
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Submitting your quiz.");
+            submitQuiz();
         }
-    }).catch(error => {
-        console.error('Error loading quiz:', error);
+    }, 1000);
+}
+
+function updateProgressBar() {
+    const progress = ((currentQuestion + 1) / numQuestions) * 100;
+    document.getElementById('progress').style.width = `${progress}%`;
+}
+
+function displayQuestion() {
+    const question = selectedQuestions[currentQuestion];
+    document.getElementById('question').innerText = question.question;
+    const options = document.getElementById('options');
+    options.innerHTML = '';
+    question.options.forEach((option, index) => {
+        const li = document.createElement('li');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'option';
+        input.value = index;
+        if (userAnswers[currentQuestion] === index) {
+            input.checked = true;
+        }
+        input.addEventListener('change', () => userAnswers[currentQuestion] = index);
+        li.appendChild(input);
+        li.appendChild(document.createTextNode(option));
+        options.appendChild(li);
     });
+    updateQuestionNumbers();
+}
+
+function changeQuestion(direction) {
+    currentQuestion += direction;
+    if (currentQuestion >= numQuestions) {
+        alert("Questions ended. Please submit your answers.");
+        currentQuestion = numQuestions - 1;
+    } else if (currentQuestion < 0) {
+        currentQuestion = 0;
+    }
+    displayQuestion();
+}
+
+function updateQuestionNumbers() {
+    const questionNumbers = document.getElementById('questionNumbers');
+    questionNumbers.innerHTML = '';
+    for (let i = 0; i < numQuestions; i++) {
+        const button = document.createElement('button');
+        button.innerText = i + 1;
+        if (userAnswers[i] !== null) {
+            button.classList.add('selected');
+        } else if (i === currentQuestion) {
+            button.classList.add('solving');
+        } else {
+            button.classList.add('upcoming');
+        }
+        button.addEventListener('click', () => {
+            currentQuestion = i;
+            displayQuestion();
+        });
+        questionNumbers.appendChild(button);
+    }
 }
 
 function submitQuiz() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const quizId = urlParams.get('quiz');
-    if (!quizId) return;
+    clearInterval(timerInterval); // Stop the timer
+    let score = 0;
+    let correctCount = 0;
+    let incorrectCount = 0;
+    let missedCount = 0;
 
-    const form = document.getElementById('quiz-form');
-    const formData = new FormData(form);
-    const answers = {};
-    formData.forEach((value, key) => {
-        answers[key] = parseInt(value);
+    selectedQuestions.forEach((question, i) => {
+        const userAnswer = userAnswers[i];
+        const isCorrect = userAnswer === question.correct;
+        if (isCorrect) {
+            score += 4;
+            correctCount++;
+        } else if (userAnswer !== null) {
+            score -= 1;
+            incorrectCount++;
+        } else {
+            missedCount++;
+        }
     });
 
-    const userName = prompt('Enter your name');
+    const totalMarks = numQuestions * 4; // Maximum marks
+    const percentage = (score / totalMarks) * 100;
 
-    db.collection('results').add({
-        quizId: quizId,
-        userName: userName,
-        answers: answers,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        displayResults(quizId);
-    }).catch(error => {
-        console.error('Error submitting quiz:', error);
+    const resultContainer = document.getElementById('result');
+    resultContainer.innerHTML = `
+        <h2>Results</h2>
+        <p><strong>Total Questions:</strong> ${numQuestions}</p>
+        <p><strong>Correct:</strong> ${correctCount}</p>
+        <p><strong>Incorrect:</strong> ${incorrectCount}</p>
+        <p><strong>Missed:</strong> ${missedCount}</p>
+        <p><strong>Total Marks Obtained:</strong> ${score} / ${totalMarks}</p>
+        <p><strong>Percentage:</strong> ${percentage.toFixed(2)}%</p>
+    `;
+
+    document.getElementById('quiz').style.display = 'none';
+    resultContainer.style.display = 'block';
+
+    // Save quiz result to local history
+    const quizResult = {
+        date: new Date().toLocaleString(),
+        score: score,
+        totalQuestions: numQuestions,
+        correct: correctCount,
+        incorrect: incorrectCount,
+        missed: missedCount
+    };
+    quizHistory.push(quizResult);
+    localStorage.setItem('quizHistory', JSON.stringify(quizHistory));
+    displayHistory();
+}
+
+function displayHistory() {
+    const historyContainer = document.getElementById('history');
+    historyContainer.innerHTML = `<h2>Quiz History</h2>`;
+    
+    quizHistory.forEach(result => {
+        const resultDiv = document.createElement('div');
+        resultDiv.classList.add('result-item');
+        resultDiv.innerHTML = `
+            <p><strong>Date:</strong> ${result.date}</p>
+            <p><strong>Score:</strong> ${result.score}</p>
+            <p><strong>Total Questions:</strong> ${result.totalQuestions}</p>
+            <p><strong>Correct:</strong> ${result.correct}</p>
+            <p><strong>Incorrect:</strong> ${result.incorrect}</p>
+            <p><strong>Missed:</strong> ${result.missed}</p>
+        `;
+        historyContainer.appendChild(resultDiv);
     });
+    historyContainer.style.display = 'block';
 }
-
-function displayResults(quizId) {
-    db.collection('results').where('quizId', '==', quizId).get().then((querySnapshot) => {
-        const resultsList = document.getElementById('results-list');
-        resultsList.innerHTML = ''; // Clear previous results
-        querySnapshot.forEach((doc) => {
-            const result = doc.data();
-            const li = document.createElement('li');
-            li.textContent = `${result.userName}: ${JSON.stringify(result.answers)}`;
-            resultsList.appendChild(li);
-        });
-        document.getElementById('quiz-container').style.display = 'none';
-        document.getElementById('result-container').style.display = 'none';
-        document.getElementById('quiz-results').style.display = 'block';
-    }).catch(error => {
-        console.error('Error fetching results:', error);
-    });
-}
-
-function shareOnWhatsApp() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const quizId = urlParams.get('quiz');
-    const baseUrl = 'https://your-username.github.io/quiz-app/';
-    const quizLink = `${baseUrl}?quiz=${quizId}`;
-    const encodedLink = encodeURIComponent(quizLink);
-    const whatsappUrl = `https://api.whatsapp.com/send?text=Check%20out%20this%20quiz:%20${encodedLink}`;
-    window.open(whatsappUrl, '_blank');
-}
-
-// Handle quiz loading based on URL parameter
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const quizId = urlParams.get('quiz');
-    if (quizId) {
-        loadQuiz(quizId);
-    } else {
-        document.getElementById('quiz-selection').style.display = 'block';
-    }
-});
